@@ -1,8 +1,12 @@
+
 #ifndef _BASECOM_ATOMIC_H
 #define _BASECOM_ATOMIC_H
 
+#include "noncopyable.h"
+#include <stdint.h>
+
 template<typename T>
-class AtomicIntegerT : noncopyable
+class AtomicIntegerT : public noncopyable
 {
   public:
     AtomicIntegerT() : value_(0) {}
