@@ -2,6 +2,8 @@
 #ifndef BASECOM_TIMESTAMP_H
 #define BASECOM_TIMESTAMP_H
 
+#include "noncopyable.h"
+
 // this stamp is UTC, in microseconds resolution
 // this class is immutable.
 // it's recommended to pass it by value, since it's passed in register on x64

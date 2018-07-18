@@ -1,10 +1,9 @@
 TARGETNAME := echo
-TARGETPATH := ../bin
-OBJECTPATH := ../obj/$(TARGETNAME)
+TARGETPATH := ../../bin
+OBJECTPATH := ../../obj/$(TARGETNAME)
 # 0 -- Application; 1 -- Static library; 2 -- Dynamic library
 TARGETTYPE = 0
-TARGETINCS = -I ../include
-#TARGETLIBS =  ../../Game_factory/GameFactory/Game_Factory.a ../../Game_factory/lib/lib/GameProvider.a ../../Game_factory/lib/lib/Common.a  ../../Game_factory/lib/lib/Epoll.a ../../Game_factory/lib/lib/libaes.a  ../../Game_factory/lib/lib/ODBCExt.a  ../../Game_factory/lib/lib/libxredis.a  ../../Game_factory/lib/lib/libTinyXml.a ../../Game_factory/lib/lib/libonsclient4cpp.a  -lpthread -lrt -lnsl -lgcc_s -ldl
+TARGETINCS = -I ../../../baseCom/ -I ../../../netWork/
 
 
 CPP = g++
@@ -13,7 +12,6 @@ RELEASE = -s -O2
 CPPFLAGS  = $(TARGETINCS)
 LINKFLAGS = $(TARGETLIBS) -lpthread -lrt -lnsl -lz -lgcc_s -lodbc
 TARGETSRCS = $(wildcard *.c *.cpp)
-#TARGETSRCS = main.cpp
 OBJS = $(addprefix $(OBJECTPATH)/, $(patsubst %.c,%.o,$(TARGETSRCS:.cpp=.o)))
 
 ifeq ($(strip $(TARGETPATH)),)

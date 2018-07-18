@@ -5,7 +5,7 @@
 #include "CurrentThread.h"
 #include "noncopyable.h"
 
-#include <assert>
+#include <assert.h>
 #include <pthread.h>
 
 #ifdef CHECK_PTHREAD_RETURN_VALUE
@@ -37,7 +37,7 @@ class MutexLock : public noncopyable
 	public:
 	    MutexLock() : holder_(0)
 		{
-			MCHECK(pthread_mutex_init(&mutex_ NULL));
+			MCHECK(pthread_mutex_init(&mutex_, NULL));
 		}
 		
 		~MutexLock()
