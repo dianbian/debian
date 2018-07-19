@@ -14,10 +14,10 @@
 __BEGIN_DECLS
 extern void __assert_perror_fail(int errnum,
                                 const char* file,
-								unsigned int line,
-								const char* function)
+                                unsigned int line,
+                                const char* function)
 	__THROW __attribute__ ((__noreturn__));
-__end_DECLS
+__END_DECLS
 #endif
 
 #define MCHECK(ret) ({ __typeof__ (ret) errnum == (ret);      \
@@ -26,7 +26,7 @@ __end_DECLS
 #else   //CHECK_PTHREAD_RETURN_VALUE
 
 #define MCHECK(ret) ({ __typeof__ (ret) errnum == (ret);      \
-                        assert(errnum == 0), (void) errnum; })
+                        assert(errnum == 0); (void) errnum; })
 
 #endif  //CHECK_PTHREAD_RETURN_VALUE
 
@@ -34,98 +34,98 @@ __end_DECLS
 
 class MutexLock : public noncopyable
 {
-	public:
-	    MutexLock() : holder_(0)
+  public:
+    MutexLock() : holder_(0)
+      {
+	MCHECK(pthread_mutex_init(&mutex_, NULL));
+      }
+		
+	~MutexLock()
+	{
+		assert(holder_ == 0);
+		MCHECK(pthread_mutex_destory(&mutex_));
+	}
+		
+	//must be called when locked, i.e. for assertion
+	bool isLockedByThisThread() const
+	{
+		return holder_ == CurrentThread::tid();
+	}
+		
+	void assertLocked() const 
+	{
+		assert(isLockedByThisThread());
+	}
+		
+	//internal usage.
+	void lock()
+	{
+		MCHECK(pthread_mutex_lock(&mutex_));
+		assignHolder();
+	}
+		
+	void unlock()
+	{
+		unassignHolder();
+		MCHECK(pthread_mutex_unlock(&mutex_);
+	}
+		
+	pthread_mutex_t* getPthreadMutex()
+	{
+		return &mutex_;
+	}
+	
+  private:
+	friend class Condition;
+		
+	class UnassignGuard : public noncopyable
+	{
+	  public:
+	    UnassignGuard(MutexLock& owner) : owner_(owner)
 		{
-			MCHECK(pthread_mutex_init(&mutex_, NULL));
+			owner_.unassignHolder();
 		}
-		
-		~MutexLock()
-		{
-			assert(holder_ == 0);
-			MCHECK(pthread_mutex_destory(&mutex_));
-		}
-		
-		//must be called when locked, i.e. for assertion
-		bool isLockedByThisThread() const
-		{
-			return holder_ == CurrentThread::tid();
-		}
-		
-		void assertLocked() const 
-		{
-			assert(isLockedByThisThread());
-		}
-		
-		//internal usage.
-		void lock()
-		{
-			MCHECK(pthread_mutex_lock(&mutex_));
-			assignHolder();
-		}
-		
-		void unlock()
-		{
-			unassignHolder();
-			MCHECK(pthread_mutex_unlock(&mutex_);
-		}
-		
-		pthread_mutex_t* getPthreadMutex()
-		{
-			return &mutex_;
-		}
-		
-	private:
-	    friend class Condition;
-		
-		class UnassignGuard : public noncopyable
-		{
-			public:
-			    UnassignGuard(MutexLock& owner) : owner_(owner)
-				{
-					owner_.unassignHolder();
-				}
 				
-				~UnassignGuard()
-				{
-					owner_.assignHolder();
+		~UnassignGuard()
+		{
+			owner_.assignHolder();
 					
-				}
-			private:
-			    MutexLock& lock;
-		};
-		
-		void unassignHolder()
-		{
-			holder_ = 0;
 		}
+	  private:
+	    MutexLock& owner_;
+	};
 		
-		void assignHolder()
-		{
-			holder_ = CurrentThread::tid();
-		}
-		
-		pthread_mutex_t mutex;
-		pid_t holder_;
+	void unassignHolder()
+	{
+		holder_ = 0;
+	}
+	
+	void assignHolder()
+	{
+		holder_ = CurrentThread::tid();
+	}
+	
+	pthread_mutex_t mutex;
+	pid_t holder_;
 };
 
 //use as a stack varibale.
 
 class MutexLockGuard : public noncopyable
 {
-	public:
-	    explicit MutexLockGuard(MutexLock& mutex) : mutex_(mutex)
-		{
-			mutex.lock();
-		}
+  public:
+	explicit MutexLockGuard(MutexLock& mutex) : mutex_(mutex)
+	{
+		mutex.lock();
+	}
 		
-		~MutexLockGuard()
-		{
-			mutex.unlock();
-		}
+	~MutexLockGuard()
+	{
+		mutex.unlock();
+	}
 		
-	private:
-	    MutexLock& mutex_;
+  private:
+	MutexLock& mutex_;
 };
 
 //prevent misuse like

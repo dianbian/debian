@@ -6,6 +6,7 @@
 #include "../baseCom/CurrentThread.h"
 #include "../baseCom/Timestamp.h"
 #include "../baseCom/noncopyable.h"
+#include "../baseCom/any.h"
 
 #include "Callbacks.h"
 #include "TimerId.h"
@@ -21,8 +22,8 @@ class TimeQueue;
 //This is an interface class, do not expose too much details.
 class EventLoop : public noncopyable
 {
-  public:
-    typedef functional<void()> Functor;
+public:
+  typedef functional<void()> Functor;
 	
 	EventLoop();
 	~EventLoop();   //force out-line dtor, for scoped_str members.
@@ -79,6 +80,51 @@ class EventLoop : public noncopyable
     //internal usage
 	void wakeup();
 	void updateChannel(Channel* channel);
+	void removeChannel(Channel* channel);
+	bool hasChannel(Channel* channel);
+	
+	void assertInLoopThread()
+	{
+		if (!isInLoopThread())
+			abortNotInLoopThread();
+	}
+	bool isInLoopThread() const { return threadId_ == CurrentThread::tid(); }
+	bool eventHandling() const { return eventHandling_; }
+	
+	void setContext(const any& context) { context_ = context; }
+	const any& getContext() const { return &context_; }
+	any* getMutableContext() { return &context_; }
+	
+	static EventLoop* getEventLoopOfCurrentThread();
+	
+private:
+  void abortNotInLoopThread();
+	void handleRead();   //wake up
+	void doPendingFunctors();
+	void printActiveChannels() const; //Debug
+	
+	bool looping_;  //atomic
+	bool quit_; //atomic and shared between threads
+	bool eventHandling_;  //atomic
+	bool callingPendingFuntors_;  //atomic
+	int64_t iteration_;
+	const pid_t threadId_;
+	Timestamp pollReturnTime_;
+	std::scoped_ptr<Poller> poller_;
+	std::scoped_ptr<TimerQueue> timerQueue_;
+	int wakeupFd_;
+	//unlike in TimerQueue, which is an internal class,
+	//do not expose Channel to client.
+	std::scoped_ptr<Channel> wakeupChannel_;
+	any context_;
+	
+	//scratch variables. ???
+	typedef std::vector<Channel*> ChannelList;
+	ChannelList activeChannels_;
+	Channel* currentActiveChannel_;
+	
+	mutable MutexLock mutex_;
+	std::vector <Functor> pendingFunctors_;  //guarded by mutex_
 };
 
 #endif //NETWORK_EVENTLOOP_H
