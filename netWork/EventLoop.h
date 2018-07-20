@@ -53,7 +53,7 @@ public:
 	size_t queueSize() const;
 
 #ifdef __GXX_EXPERIMENTAL_CXX0X__
-    void runInLoop(Functor&& cb);
+  void runInLoop(Functor&& cb);
 	void queueInLoop(Functor&& cb);
 #endif
     
@@ -72,7 +72,7 @@ public:
 	void cancel(TimeId timerId);
 
 #ifdef __GXX_EXPERIMENTAL_CXX0X__
-    TimeId runAt(const Timestamp& time, TimerCallback&& cb);
+  TimeId runAt(const Timestamp& time, TimerCallback&& cb);
 	TimeId runAfter(double delay, TimerCallback&& cb);
 	TimeId runEvery(double interval, TimerCallback&& cb);
 #endif
