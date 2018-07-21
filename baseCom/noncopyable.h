@@ -5,7 +5,7 @@
 class noncopyable
 {
 	protected:
-	    constexpr noncopyable() = default;
+	  constexpr noncopyable() = default;
 		~noncopyable() = default;
 		noncopyable(const noncopyable&) = delete;
 		noncopyable& operator=(const noncopyable&) = delete;

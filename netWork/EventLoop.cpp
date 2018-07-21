@@ -6,7 +6,7 @@
 #include "Channel.h"
 #include "Poller.h"
 #include "SocketsOps.h"
-#include "TiemrQueue.h"
+#include "TimerQueue.h""
 
 #include <functional>
 
@@ -161,7 +161,7 @@ TimerId EventLoop::runAfter(double delay, const TimerCallback& cb)
 
 TimerId EventLoop::runEvery(double interval, const TimerCallback& cb)
 {
-  Timestamp time(Timestamp::now(), interval));
+  Timestamp time(Timestamp::now(), interval);
   return timerQueue_->addTimer(cb, time, interval);
 }
 

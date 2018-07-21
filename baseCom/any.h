@@ -1,5 +1,6 @@
 #pragma once
 #include <typeinfo>
+#include <algorithm>
 //#include <typeindex> 
 //#include <type_traits>
 
@@ -101,7 +102,7 @@ inline void swap(any & lhs, any & rhs)
 class  bad_any_cast : public std::bad_cast
 {
 public:
-	virtual const char * what() const 
+	virtual const char* what() const 
 	{
 		return "bad_any_cast: "
 			"failed conversion using any_cast";
@@ -174,6 +175,5 @@ void test_any()
 	std::cout << std::endl;
 
 }
-
 
 #endif

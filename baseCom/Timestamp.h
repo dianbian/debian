@@ -2,19 +2,21 @@
 #ifndef BASECOM_TIMESTAMP_H
 #define BASECOM_TIMESTAMP_H
 
-#include "noncopyable.h"
+#include "copyable.h"
+
+#include <string>
 
 // this stamp is UTC, in microseconds resolution
 // this class is immutable.
 // it's recommended to pass it by value, since it's passed in register on x64
 
-class Timestamp : public noncopyable,
+class Timestamp : public copyable/*,
 				  public equality_comparable<Timestamp>,
-				  public less_than_comparable<Timestamp>
+				  public less_than_comparable<Timestamp>*/
 {
-	public:
+ public:
 		// constructs an invalid Timestamp.
-		Timestamp() : microSecondsSinceEpoch_(0) { }
+    Timestamp() : microSecondsSinceEpoch_(0) { }
 
 		//constructs a Timestamp at specific time 
 		explicit Timestamp(int64_t microSecondsSinceEpochArg) :
@@ -77,7 +79,7 @@ inline double timeDifference(Timestamp high, Timestamp low)
 inline Timestamp addTime(Timestamp timestamp, double seconds)
 {
 	int64_t delta = static_cast<int64_t>(seconds * Timestamp::KMicroSecondsPerSecond);
-	return Timestamp(timestamp.KMicroSecondsPerSecond() + delta);
+	return Timestamp(timestamp.KMicroSecondsPerSecond + delta);
 }
 
 #endif //BASECOM_TIMESTAMP_H

@@ -20,12 +20,12 @@ extern void __assert_perror_fail(int errnum,
 __END_DECLS
 #endif
 
-#define MCHECK(ret) ({ __typeof__ (ret) errnum == (ret);      \
+#define MCHECK(ret) ({ __typeof__ (ret) errnum = (ret);      \
                        if (__builtin_expect(errnum != 0, 0))  \
                         __assert_perror_fail (errnum, __FILE__, __LINE__, __func__); })
 #else   //CHECK_PTHREAD_RETURN_VALUE
 
-#define MCHECK(ret) ({ __typeof__ (ret) errnum == (ret);      \
+#define MCHECK(ret) ({ __typeof__ (ret) errnum = (ret);      \
                         assert(errnum == 0); (void) errnum; })
 
 #endif  //CHECK_PTHREAD_RETURN_VALUE
@@ -34,16 +34,16 @@ __END_DECLS
 
 class MutexLock : public noncopyable
 {
-  public:
-    MutexLock() : holder_(0)
-      {
-	MCHECK(pthread_mutex_init(&mutex_, NULL));
-      }
+ public:
+  MutexLock() : holder_(0)
+	{
+		MCHECK(pthread_mutex_init(&mutex_, NULL));
+  }
 		
 	~MutexLock()
 	{
 		assert(holder_ == 0);
-		MCHECK(pthread_mutex_destory(&mutex_));
+		MCHECK(pthread_mutex_destroy(&mutex_));
 	}
 		
 	//must be called when locked, i.e. for assertion
@@ -67,7 +67,7 @@ class MutexLock : public noncopyable
 	void unlock()
 	{
 		unassignHolder();
-		MCHECK(pthread_mutex_unlock(&mutex_);
+		MCHECK(pthread_mutex_unlock(&mutex_));
 	}
 		
 	pthread_mutex_t* getPthreadMutex()
@@ -75,7 +75,7 @@ class MutexLock : public noncopyable
 		return &mutex_;
 	}
 	
-  private:
+ private:
 	friend class Condition;
 		
 	class UnassignGuard : public noncopyable
@@ -105,7 +105,7 @@ class MutexLock : public noncopyable
 		holder_ = CurrentThread::tid();
 	}
 	
-	pthread_mutex_t mutex;
+	pthread_mutex_t mutex_;
 	pid_t holder_;
 };
 
@@ -113,7 +113,7 @@ class MutexLock : public noncopyable
 
 class MutexLockGuard : public noncopyable
 {
-  public:
+ public:
 	explicit MutexLockGuard(MutexLock& mutex) : mutex_(mutex)
 	{
 		mutex.lock();
@@ -121,10 +121,10 @@ class MutexLockGuard : public noncopyable
 		
 	~MutexLockGuard()
 	{
-		mutex.unlock();
+		mutex_.unlock();
 	}
 		
-  private:
+ private:
 	MutexLock& mutex_;
 };
 

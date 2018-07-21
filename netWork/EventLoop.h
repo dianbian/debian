@@ -13,17 +13,18 @@
 
 #include <functional>
 #include <memory>
+#include <vector>
 
 class Channel;
 class Poller;
-class TimeQueue;
+class TimerQueue;
 
 //Reactor, at most one per thread.
 //This is an interface class, do not expose too much details.
 class EventLoop : public noncopyable
 {
 public:
-  typedef functional<void()> Functor;
+  typedef std::function<void()> Functor;
 	
 	EventLoop();
 	~EventLoop();   //force out-line dtor, for scoped_str members.
@@ -60,21 +61,21 @@ public:
 	//Timers
 	//Runs callback at 'time'.
 	//Safe to call from other threads.
-	TimeId runAt(const Timestamp& time, const TimerCallback& cb);
+	TimerId runAt(const Timestamp& time, const TimerCallback& cb);
 	//Runs callback after delay seconds.
 	//Safe to call from other threads.
-	TimeId runAfter(double delay, const TimerCallback& cb);
+	TimerId runAfter(double delay, const TimerCallback& cb);
 	//Runs callback every interval seconds.
 	//Safe to call from other threads.
-	TimeId runEvery(double interval, const TimerCallback& cb);
+	TimerId runEvery(double interval, const TimerCallback& cb);
 	//Cancels the Timer.
 	//Safe to call from other threads.
-	void cancel(TimeId timerId);
+	void cancel(TimerId timerId);
 
 #ifdef __GXX_EXPERIMENTAL_CXX0X__
-  TimeId runAt(const Timestamp& time, TimerCallback&& cb);
-	TimeId runAfter(double delay, TimerCallback&& cb);
-	TimeId runEvery(double interval, TimerCallback&& cb);
+  TimerId runAt(const Timestamp& time, TimerCallback&& cb);
+	TimerId runAfter(double delay, TimerCallback&& cb);
+	TimerId runEvery(double interval, TimerCallback&& cb);
 #endif
 
     //internal usage
@@ -92,7 +93,7 @@ public:
 	bool eventHandling() const { return eventHandling_; }
 	
 	void setContext(const any& context) { context_ = context; }
-	const any& getContext() const { return &context_; }
+	const any& getContext() const { return context_; }
 	any* getMutableContext() { return &context_; }
 	
 	static EventLoop* getEventLoopOfCurrentThread();
@@ -110,12 +111,17 @@ private:
 	int64_t iteration_;
 	const pid_t threadId_;
 	Timestamp pollReturnTime_;
-	std::scoped_ptr<Poller> poller_;
-	std::scoped_ptr<TimerQueue> timerQueue_;
+
+	//scoped_ptr<Poller> poller_;
+	//std::scoped_ptr<TimerQueue> timerQueue_;
+	//c++ don't have scoped_ptr, but unique_ptr may be the same one
+	std::unique_ptr<Poller> poller_;
+	std::unique_ptr<TimerQueue> timerQueue_;
 	int wakeupFd_;
 	//unlike in TimerQueue, which is an internal class,
 	//do not expose Channel to client.
-	std::scoped_ptr<Channel> wakeupChannel_;
+	//std::scoped_ptr<Channel> wakeupChannel_;
+	std::unique_ptr<Channel> wakeupChannel_;
 	any context_;
 	
 	//scratch variables. ???
