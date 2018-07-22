@@ -10,7 +10,7 @@ CPP = g++
 DEBUG = -g -DDEBUG -D_REENTRANT -w -std=c++11
 RELEASE = -s -O2
 CPPFLAGS  = $(TARGETINCS)
-LINKFLAGS = $(TARGETLIBS) -lpthread -lrt -lnsl -lz -lgcc_s -lodbc
+LINKFLAGS = $(TARGETLIBS) -lpthread -lrt -lnsl -lgcc_s
 TARGETSRCS = $(wildcard *.c *.cpp)
 OBJS = $(addprefix $(OBJECTPATH)/, $(patsubst %.c,%.o,$(TARGETSRCS:.cpp=.o)))
 

@@ -24,7 +24,7 @@ class FixedBuffer : public noncopyable
     setCookie(cookieStart);
   }
   
-  ~FixedBuffer(0
+  ~FixedBuffer()
   {
     setCookie(cookieEnd);
   }
@@ -32,7 +32,7 @@ class FixedBuffer : public noncopyable
   void append(const char* buf, size_t len)
   {
     //FIXME append partially
-    if (implicit_cast<size_t>(avail()) > len)
+   // if (implicit_cast<size_t>(avail()) > len)
     {
       memcpy(cur_, buf, len);
       cur_ += len;
@@ -71,7 +71,7 @@ class LogStream : public noncopyable
 {
   typedef LogStream self;
  public:
-  typedef detail::FixedBuffer<detail::kSmallBuffer> Buffer;
+  typedef detail::FixedBuffer<detail::KSamllBuffer> Buffer;
   
   self& operator<<(bool v)
   {
@@ -107,7 +107,7 @@ class LogStream : public noncopyable
     if (str)
       buffer_.append(str, strlen(str));
     else 
-      buffer_.appen("NULL", 6);
+      buffer_.append("NULL", 6);
     return *this;
   }
   
@@ -136,6 +136,8 @@ class LogStream : public noncopyable
  
  private:
   void staticCheck();
+
+	template<typename T>
   void formatInteger(T);
   
   Buffer buffer_;  //may be FixedBuffer buffer_ ?
@@ -158,7 +160,7 @@ class Fmt
 
 inline LogStream& operator<<(LogStream& s, const Fmt& fmt)
 {
-  s.appen(fmt.data(), fmt.length());
+  s.append(fmt.data(), fmt.length());
   return s;
 }
 

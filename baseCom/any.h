@@ -99,10 +99,10 @@ inline void swap(any & lhs, any & rhs)
 	lhs.swap(rhs);
 }
 
-class  bad_any_cast : public std::bad_cast
+class bad_any_cast : public std::bad_cast
 {
 public:
-	virtual const char* what() const 
+	virtual const char* what() const noexcept override
 	{
 		return "bad_any_cast: "
 			"failed conversion using any_cast";
