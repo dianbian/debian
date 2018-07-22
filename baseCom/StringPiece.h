@@ -8,26 +8,26 @@
 //c字符串的转化
 class StringArg   //copyable
 {
-  public:
-    StringArg(const char* str) : str_(str)
+ public:
+  StringArg(const char* str) : str_(str)
 	{ }
 	
 	StringArg(const std::string& str) : str_(str.c_str())
 	{ }
 
 	const char* c_str() const { return str_; }
-  private:
-    const char* str_;
+ private:
+  const char* str_;
 };
 
 class StringPiece 
 {
-  private:
-    const char* ptr_;
+ private:
+  const char* ptr_;
 	int         length_;
 
-  public:
-    StringPiece() : ptr_(NULL), length_(0) { }
+ public:
+  StringPiece() : ptr_(NULL), length_(0) { }
 	
 	StringPiece(const char* str) : ptr_(str), length_(static_cast<int>(strlen(ptr))) { }
 	

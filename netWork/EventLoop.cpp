@@ -214,4 +214,67 @@ void EventLoop::cancel(TimerId timerId)
   return timerQueue_->cancel(timerId);
 }
 
+void EventLoo::updateChannel(Channel* channel)
+{
+  assert(channel->ownerLoop() == this);
+  assertInLoopThread();
+  if (eventHandling_)
+  {
+    assert(currentActiveChannel_ == channel || 
+      std::find(activeChannels_.begin(), activeChannels_.end(), channel) == activeChannels_.end())
+  }
+  poller_->removeChannel(channel);
+}
+
+bool EventLoop::hasChannel(channel* channel)
+{
+  assert(channel->onwerLoop() == this);
+  assertInLoopThread();
+  return poller_->hasChannel(channel);
+}
+
+void EventLoop::abortNotInLoopThread()
+{
+  LOG_FATAL << "EventLoop::abortNotInLoopThread - EventLoop " << this
+            << " was created in threadId_ = " << threadId_
+            << ", current thread id = " << CurrentThead::tid();
+}
+
+void EventLoop::wakeup()
+{
+  uint64_t one = 1;
+  ssize_t n = netsockets::write(wakeupFd_, &one, sizeof one);
+  if (n != sizeof one)
+  {
+    LOG_ERROR << "EventLoop::handleRead() reads " << n << " bytes instead of 8";
+  }
+}
+
+void EventLoop::doPendingFunctors()
+{
+  std::vector<Functor> functors;
+  callingPengingFunctors_ = true;
+  
+  {
+    MutexLockGuard lock(mutex_);
+    functors.swap(pendingFunctors_);
+  }
+  
+  for (size_t i = 0; i < functors.size(); ++i)
+  {
+    functors[i]();
+  }
+  callingPengingFunctors_ = false;
+}
+
+void EventLoop::printActionChannels() const
+{
+  for (auto it = activeChannels_.rbegin(); it != activeChannels_.end(); ++it)
+  {
+    const channel* ch = *it;
+    LOG_TRACE << "{" << ch->reventsToString() << "}";
+  }
+}
+
+
 
