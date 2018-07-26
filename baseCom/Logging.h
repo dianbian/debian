@@ -18,14 +18,15 @@ class Logger
     WARN,
     ERROR,
     FATAL,
-    NUM_LOG_LEVELS,
+    NUM_LOG_LEVELS
   };
+
   //compile time calculation of basename of source file
   class SourceFile
   {
    public:
     template<int N>
-    inline SourceFile(const char (&arr)[N]) : data_(arr), size_(1)
+    inline SourceFile(const char (&arr)[N]) : data_(arr), size_(N - 1)
     {
       const char* slash = strrchr(data_, '/');
       if (slash)
@@ -52,19 +53,20 @@ class Logger
   Logger(SourceFile file, int line);
   Logger(SourceFile file, int line, LogLevel level);
   Logger(SourceFile file, int line, LogLevel level, const char* func);
-  Logger(SourceFile file, int line, LogLevel level, bool toAbotr);
+  Logger(SourceFile file, int line, bool toAbotr);
   ~Logger();
   
   LogStream& stream() { return impl_.stream_; }
   
-  static LogLevel LogLevel();
+  static LogLevel logLevel();
   static void setLogLevel(LogLevel level);
   
-  typedef void (*OuputFunc)(const char* msg, int len);
+  typedef void (*OutputFunc)(const char* msg, int len);
   typedef void (*FlushFunc)();
   static void setOutput(OutputFunc);
   static void setFlush(FlushFunc);
-  static setTimeZone(const TimeZone& tz);
+  static void setTimeZone(const TimeZone& tz);
+
  private:
   class Impl
   {
@@ -86,7 +88,7 @@ class Logger
 
 extern Logger::LogLevel g_logLevel;
 
-inline Logger::LogLevel Logger::LogLevel();
+inline Logger::LogLevel Logger::logLevel()
 {
   return g_logLevel;
 }
