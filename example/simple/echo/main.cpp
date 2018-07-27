@@ -5,5 +5,6 @@
 
 int main()
 {
+	printf("hahhahahahah\n");
 	printf("coding...\n");
 }
