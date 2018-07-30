@@ -13,11 +13,8 @@ using namespace std;
 
 namespace ProcessInfo
 {
-  pid_t pid();
   string pidString();
-  uid_t uid();
   string username();
-  uid_t euid();
   Timestamp startTime();
   int clockTicksPerSecond();
   int pageSize();
