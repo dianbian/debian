@@ -214,7 +214,7 @@ void EventLoop::cancel(TimerId timerId)
   return timerQueue_->cancel(timerId);
 }
 
-void EventLoo::updateChannel(Channel* channel)
+void EventLoop::updateChannel(Channel* channel)
 {
   assert(channel->ownerLoop() == this);
   assertInLoopThread();

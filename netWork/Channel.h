@@ -30,7 +30,7 @@ class Channel : public noncopyeable
 		void setCloseCallback(const EventCallback& cb) { closeCallback_ = cb; }
 		void setErrorCallback(const EventCallback& cb) { errorCallback_ = cb; }
 #ifdef __GXX_EXPERIMENTAL_CXX0X__
-        void setReadCallback(ReadEventCallback&& cb) { readCallback_ = std::move(cb); }
+    void setReadCallback(ReadEventCallback&& cb) { readCallback_ = std::move(cb); }
 		void setWriteCallback(EventCallback&& cb) { writeCallback_ = std::move(cb); }
 		void setCloseCallback(EventCallback&& cb) { closeCallback_ = std::move(cb); }
 		void setErrorCallback(EventCallback&& cb) { errorCallback_ = std::move(cb); }

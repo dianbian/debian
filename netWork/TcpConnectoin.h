@@ -1,7 +1,6 @@
 /*************************************************************************
 	> File Name: TcpConnectoin.h
-	> Author: bian
-	> Mail: 986573837@qq.com 
+  > Mail: 986573837@qq.com 
 	> Created Time: Sat 14 Jul 2018 10:39:22 AM CST
  ************************************************************************/
 
@@ -39,8 +38,8 @@ class TcpConnectoin : public noncopyable, std::enable_shared_from_this<TcpConnec
   
   EventLoop* getLoop() const { return loop_; }
   const std::string& name() const { return name_; }
-  cosnt InetAddress& localAddr() const { return localAddr_; }
-  const InetAddress& peerAddr() const { return peerAddr_; }
+  cosnt InetAddress& localAddress() const { return localAddr_; }
+  const InetAddress& peerAddress() const { return peerAddr_; }
   bool connected() const { return state_ == kConnected; }
   bool disconnected() const { return state_ == kDisconnected_; }
   bool getTcpInfo(struct tcp_info*) const; //return true if success.

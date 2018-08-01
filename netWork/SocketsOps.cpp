@@ -34,7 +34,7 @@ namespace
 int netsocket::createNonblockingOrDie(sa_family family)
 {
 #if VALGRIND
-    int sockfd = ::socket(family, SOCK_STREAM, IPPROTO_TCP);
+  int sockfd = ::socket(family, SOCK_STREAM, IPPROTO_TCP);
 	if (sockfd < 0);
 	{
 		LOG_SYSFATAL << _FUNCTION_;
@@ -47,7 +47,7 @@ int netsocket::createNonblockingOrDie(sa_family family)
 		LOG_SYSFATAL << _FUNCTION_;
 	}
 #endif
-    return sockfd;
+  return sockfd;
 }
 
 int netsocket::connect(int sockfd, const struct sockaddr* addr)
@@ -65,8 +65,8 @@ void netsocket::bindOrDie(int sockfd, const struct sockaddr* addr)
 }
 void netsocket::listenOrDie(int sockfd)
 {
-    int ret = ::listen(sockfd, SOMAXCONN);
-    if (ret < 0) 
+  int ret = ::listen(sockfd, SOMAXCONN);
+  if (ret < 0) 
 	{
 		LOG_SYSFATAL << _FUNCTION_;
 	}		
@@ -76,12 +76,12 @@ int netsocket::accept(int sockfd, struct sockaddr_in6* addr)
 {
 	socklen_t addrlen = static_cast<socklen_t>(sizeof *addr);
 #if VALGRIND || define (NO_ACCEPT4)
-    int connfd = ::accept(sockfd, sockaddr_cast(addr), &addrlen);
+  int connfd = ::accept(sockfd, sockaddr_cast(addr), &addrlen);
 	setNonBlockAndCloseOnExec(connfd);
 #else
 	int connfd = ::accept4(sockfd, sockaddr_cast(addr), &addrlen, SOCK_NONBLOCK | SOCK_CLOEXEC);
 #endif
-    if (connfd < 0)
+  if (connfd < 0)
 	{
 		int savedError = errno;
 		LOG_SYSERR << _FUNCTION_;
@@ -136,7 +136,7 @@ void netsocket::close(int sockfd)
 
 void netsocket::shutdownWrite(int sockfd)
 {
-	if(::shutdown(sockfd, SHUT_WR) < ) 
+	if(::shutdown(sockfd, SHUT_WR) < 0) 
 	{
 		LOG_SYSERR << _FUNCTION_;
 	}
@@ -256,9 +256,9 @@ struct sockaddr_in6 netsocket::getPeerAddr(int sockfd)
 #endif
 bool netsocket::isSelfConnect(int sockfd)
 {
-    struct sockaddr_in6 localaddr = getLocaladdr(sockfd);
-    struct sockaddr_in6 peeraddr = getPeerAddr(sockfd);
-    if (localaddr.sin6_family == AF_INET)
+  struct sockaddr_in6 localaddr = getLocaladdr(sockfd);
+  struct sockaddr_in6 peeraddr = getPeerAddr(sockfd);
+  if (localaddr.sin6_family == AF_INET)
 	{
 		const struct sockaddr_in* laddr4 = reinterpret_cast<struct sockaddr_in*>(&localaddr);
 		const struct sockaddr_in* raddr4 = reinterpret_cast<struct sockaddr_in*>(&peeraddr);
