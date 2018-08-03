@@ -309,3 +309,42 @@ void TcpConnectoin::handleRead(Timestamp receiveTime)
     handleError();
   }
 }
+
+void TcpConnectoin::handleWrite()
+{
+  loop_->assertInLoopThread();
+  if (channel_->isWriting())
+  {
+    ssize_t n = netsocket::write(channel_->fd(), outputBuffer_.peek(), outputBuffer_.readableBytes());
+    if (n > 0)
+    {
+      outputBuffer_.retrieve(n);
+      if (outputBuffer_.readableBytes() == 0)
+      {
+        channel_->disableWriting();
+        if (writeCompleteCallback_)
+        {
+          loop_->queueInLoop(std::bind(writeCompleteCallback_, shared_from_this()));
+        }
+        if (state_ == kDisconnecting)
+        {
+          shutdownInLoop();
+        }
+      }
+    }
+    else
+    {
+      LOG_SYSERR << "TcpConnectoin::handleWrite";
+    }
+  }
+  else
+  {
+    LOG_TRACE << "Connection fd = " << channel_->fd() << " is down, no more writing";
+  }
+}
+
+void TcpConnectoin::handleClose()
+{
+  loop_->assertInLoopThread();
+  LOG_TRACE << ""
+}
