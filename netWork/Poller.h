@@ -44,8 +44,8 @@ class Poller : public noncopyable
   typedef std::map<int, Channel*> ChannelMap;
 	ChannelMap channels_;
 	
-  private:
-    EvenLoop* ownerLoop_;
+ private:
+  EvenLoop* ownerLoop_;
 };
 
 #endif //NETWORK_POLLER_H

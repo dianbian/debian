@@ -346,5 +346,14 @@ void TcpConnectoin::handleWrite()
 void TcpConnectoin::handleClose()
 {
   loop_->assertInLoopThread();
-  LOG_TRACE << ""
+  LOG_TRACE << "fd = " << channel_->fd() << " state = " << stateToString();
+  assert(state_ == kConnected || state_ == kDisconnecting);
+  //wo don't close fd, leave it to dtor, so we cam find leaks easily.
+  setState(kDisconnected);
+  channel_->disableAll();
+  
+  TcpConnectoinPtr guardThis(shared_from_this());
+  connectionCallback_(guardThis);
+  //must be the last line
+  closeCallback_(guardThis);
 }
