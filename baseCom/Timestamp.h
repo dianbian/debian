@@ -38,7 +38,7 @@ class Timestamp : public copyable/*,
 		int64_t microSecondsSinceEpoch() const { return microSecondsSinceEpoch_; }
 
 		time_t secondsSinceEpoch() const { 
-			return static_cast<time_t>(microSecondsSinceEpoch_ / KMicroSecondsPerSecond); 
+			return static_cast<time_t>(microSecondsSinceEpoch_ / kMicroSecondsPerSecond); 
 		}
 		//get time of now.
 		static Timestamp now();
@@ -49,10 +49,10 @@ class Timestamp : public copyable/*,
 		}
 
 		static Timestamp fromUnixTime(time_t t, int microseconds) {
-			return Timestamp(static_cast<int64_t>(t) * KMicroSecondsPerSecond + microseconds);
+			return Timestamp(static_cast<int64_t>(t) * kMicroSecondsPerSecond + microseconds);
 		}
 
-		static const int KMicroSecondsPerSecond = 1000 * 1000;
+		static const int kMicroSecondsPerSecond = 1000 * 1000;
 	
 	private:
 		int64_t microSecondsSinceEpoch_;
@@ -72,14 +72,14 @@ inline bool operator==(Timestamp lhs, Timestamp rhs)
 inline double timeDifference(Timestamp high, Timestamp low)
 {
 	int64_t diff = high.microSecondsSinceEpoch() - low.microSecondsSinceEpoch();
-	return static_cast<double>(diff) / Timestamp::KMicroSecondsPerSecond;
+	return static_cast<double>(diff) / Timestamp::kMicroSecondsPerSecond;
 }
 
 //add seconds to given timestamp.
 inline Timestamp addTime(Timestamp timestamp, double seconds)
 {
-	int64_t delta = static_cast<int64_t>(seconds * Timestamp::KMicroSecondsPerSecond);
-	return Timestamp(timestamp.KMicroSecondsPerSecond + delta);
+	int64_t delta = static_cast<int64_t>(seconds * Timestamp::kMicroSecondsPerSecond);
+	return Timestamp(timestamp.kMicroSecondsPerSecond + delta);
 }
 
 #endif //BASECOM_TIMESTAMP_H

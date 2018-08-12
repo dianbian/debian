@@ -1,16 +1,20 @@
-#include "netWork/TcpServer.h"
+#include "../../../netWork/EventLoop.h" 
+#include "../../../netWork/InetAddress.h"
+//#include "../../../netWork/TcpServer.h"
+
+#include "../../../baseCom/Timestamp.h"
 
 class EchoServer
 {
-  public:
-	EchoServer(net::EventLoop * loop, const net::InetAddress& listenAddr);
+ public:
+	EchoServer(EventLoop * loop, const InetAddress& listenAddr);
 	
 	void start();   //调用server_.start()
 	
-  private:
-    void onConnection(const net::TcpConnectionPtr& conn);
+ private:
+  void onConnection(const TcpConnectionPtr& conn);
 	
-	void onMessage(const net::TcpConnectionPtr& conn， net::Buffer* buf, TimeStamp time);
+	void onMessage(const TcpConnectionPtr& conn, Buffer* buf, Timestamp time);
 	
-	net::TcpServer server_;
+	TcpServer server_;
 };

@@ -9,7 +9,7 @@ namespace netsockets
 {
 	//creates a non-blocking socket file descriptor,
 	//abort if any error.
-	int createNonblockingOrDie(sa_family family);
+	int createNonblockingOrDie(sa_family_t family);
 	
 	int connect(int sockfd, const struct sockaddr* addr);
 	void bindOrDie(int sockfd, const struct sockaddr* addr);
@@ -24,8 +24,8 @@ namespace netsockets
 	void toInPort(char* buf, size_t size, const struct sockaddr* addr);
 	void toIp(char* buf, size_t size, const struct sockaddr* addr);
 	
-	void fromIpPort(const char* ip, uint16_t port, const sockaddr* addr);
-	void fromIpPort(const char* ip, uint16_t port, const sockaddr_in6* addr);
+	void fromIpPort(const char* ip, uint16_t port, struct sockaddr_in* addr);
+	void fromIpPort(const char* ip, uint16_t port, struct sockaddr_in6* addr);
 	
 	int getSocketError(int sockfd);
 	

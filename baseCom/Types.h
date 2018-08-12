@@ -21,7 +21,7 @@ inline To down_cast(From* f)
     implicit_cast<From*, To>(0);
   }
   
-#if !define(NDEBUG) && !define(GOOGLE_PROTOBUF_NO_RTTI)
+#if !defined(NDEBUG) && !defined(GOOGLE_PROTOBUF_NO_RTTI)
   assert(f == NULL ||dynamic_cast<To>(f) != NULL);
 #endif
   return static_cast<To>(f);

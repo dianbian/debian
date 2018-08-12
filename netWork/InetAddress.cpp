@@ -2,7 +2,6 @@
 #include "InetAddress.h"
 #include "../baseCom/Logging.h"
 #include "Endian.h"
-#Include "SocketsOps.h"
 
 #include <netdb.h>
 #include <string.h>
@@ -56,7 +55,7 @@ InetAddress::InetAddress(uint16_t port, bool loopbackOnly, bool ipv6)
 		bzero(&addr_, sizeof addr_);
 		addr_.sin_family = AF_INET;
 		in_addr_t ip = loopbackOnly ? kInaddrLoopback : kInaddrAny;
-		addr_.sin6_addr.s.addr = hostToNetwork32(ip);
+		addr_.sin_addr.s_addr = hostToNetwork32(ip);
 		addr_.sin_port = hostToNetwork16(port);
 	}
 }
@@ -66,19 +65,19 @@ InetAddress::InetAddress(StringArg ip, uint16_t port, bool ipv6)
 	if (ipv6)
 	{
 		bzero(&addr6_, sizeof addr6_);
-		netsocket::fromIpPort(ip.c_str(), port, &addr6_);
+		netsockets::fromIpPort(ip.c_str(), port, &addr6_);
 	}
 	else
 	{
 		bzero(&addr_, sizeof addr_);
-		netsocket::fromIpPort(ip.c_str(), port, &addr_);
+		netsockets::fromIpPort(ip.c_str(), port, &addr_);
 	}
 }
 
 std::string InetAddress::toIpPort() const
 {
 	char buf[64] = "";
-	netsocket::toIp(buf, sizeof buf, getSockAddr());
+	netsockets::toIp(buf, sizeof buf, getSockAddr());
 	return buf;
 }
 

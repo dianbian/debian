@@ -13,12 +13,12 @@ class Logger
   enum LogLevel
   {
     TRACE,
-    DEBUG,
+    DEBUG1,
     INFO,
     WARN,
     ERROR,
     FATAL,
-    NUM_LOG_LEVELS
+    NUM_LOG_LEVELS,
   };
 
   //compile time calculation of basename of source file

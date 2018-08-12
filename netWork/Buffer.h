@@ -37,7 +37,7 @@ public:
 	//NOTE: implicit move-ator is added in g++ 4.6
 	
 	void swap(Buffer& rhs) {
-		buffer_.swap(readerIndex_, rhs.readerIndex_);
+		buffer_.swap(rhs.buffer_);
 		std::swap(readerIndex_, rhs.readerIndex_);
 		std::swap(writerIndex_, rhs.writerIndex_);
 	}
@@ -59,7 +59,7 @@ public:
 	const char* findCRLF(const char* start) const {
 		assert(peek() <= start);
 		assert(start <= beginWrite());
-		const char* crlf = std::search(peek(), beginWrite(), kCRLF, kCRLF + 2);
+		const char* crlf = std::search(start, beginWrite(), kCRLF, kCRLF + 2);
 		return crlf == beginWrite() ? NULL : crlf;
 	}
 	
@@ -92,13 +92,13 @@ public:
 		retrieve(end - peek());
 	}
 	
-	void retrieveInt64() { retrieve(sizeof(int64_t); }
+	void retrieveInt64() { retrieve(sizeof(int64_t)); }
 	
-	void retrieveInt32() { retrieve(sizeof(int32_t); }
+	void retrieveInt32() { retrieve(sizeof(int32_t)); }
 	
-	void retrieveInt16() { retrieve(sizeof(int16_t); }
+	void retrieveInt16() { retrieve(sizeof(int16_t)); }
 	
-	void retrieveInt8() { retrieve(sizeof(int8_t); }
+	void retrieveInt8() { retrieve(sizeof(int8_t)); }
 	
 	void retrieveAll() {
 		readerIndex_ = kCheapPrepend;
@@ -114,7 +114,7 @@ public:
 		return result;
 	}
 	
-	StringPiece toStringPiece() const { return StringPiece(peek(), static_cast<int>(readableBytes))); }
+	StringPiece toStringPiece() const { return StringPiece(peek(), static_cast<int>(readableBytes())); }
 	
 	void append(const StringPiece& str) { append(str.data(), str.size()); }
 	
@@ -196,7 +196,7 @@ public:
 		assert(readableBytes() >= sizeof(int64_t));
 		int64_t be64 = 0;
 		::memcpy(&be64, peek(), sizeof be64);
-		return networkToHost64(begin);
+		return networkToHost64(be64);
 	}
 	
 	int32_t peekInt32() const {
@@ -215,7 +215,7 @@ public:
 	
 	int8_t peekInt8() const {
 		assert(readableBytes() >= sizeof(int8_t));
-		int8_t x = *peek;
+		int8_t x = *peek();
 		return x;
 	}
 	
@@ -252,7 +252,7 @@ public:
 		swap(other);
 	}
 	
-	size_t internalCapacity() const { return buffer_.capacity; }
+	size_t internalCapacity() const { return buffer_.capacity(); }
 	
 	//Read data directly into buffer.
 	//It may implement with readv(2)

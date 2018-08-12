@@ -1,3 +1,11 @@
 this is my first time to use github, I am excited.
 
 this is my second time to upload github to my house computer.
+
+how to connect wifi ?   yum -y install NetworkManager-wifi (censtos 7);
+                        nmcli r wifi on
+												nmcli dev wifi
+												nmcli --ask dev wifi connect wifi-name;
+
+how to connect Enther   vi /etc/sysconfig/network-scripts
+                        vi /etc/resolv.conf;

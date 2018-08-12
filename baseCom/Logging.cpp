@@ -2,7 +2,7 @@
 #include "Logging.h"
 #include "CurrentThread.h"
 #include "Timestamp.h"
-#inclued "TimeZone.h"
+#include "TimeZone.h"
 
 #include <errno.h>
 #include <stdio.h>
@@ -54,30 +54,35 @@ class T
   const unsigned len_;
 };
 
-inline LogStrem& operator<<(LogStrem& s, T v)
+inline LogStream& operator<<(LogStream& s, T v)
 {
   s.append(v.str_, v.len_);
   return s;
 }
 
-inline LogStrem& operator<<(LogStrem& s, const Logger::SourceFile& v)
+inline LogStream& operator<<(LogStream& s, const Logger::SourceFile& v)
 {
   s.append(v.data_, v.size_);
   return s;
 }
 
-void defaultOutput()
+void defaultOutput(const char* msg, int len)
 {
-  fflush(stdout);
+  size_t n = fwrite(msg, 1, len, stdout);
+	(void)n;
+}
+
+void defaultFlush()
+{
+	fflush(stdout);
 }
 
 Logger::OutputFunc g_output = defaultOutput;
-Logger::FlushFunc g_flush = defaultOutput;
+Logger::FlushFunc g_flush = defaultFlush;
 TimeZone g_logTimeZone;
 
-
 Logger::Impl::Impl(LogLevel level, int savedErrno, const SourceFile& file, int line)
-    : time_(Timestamp::now),
+    : time_(Timestamp::now()),
       stream_(),
       level_(level),
       line_(line),
@@ -93,7 +98,7 @@ Logger::Impl::Impl(LogLevel level, int savedErrno, const SourceFile& file, int l
   }
 }
 
-void Logger::Imp::formatTime()
+void Logger::Impl::formatTime()
 {
   int64_t microSecondsSinceEpoch = time_.microSecondsSinceEpoch();
   time_t seconds = static_cast<time_t>(microSecondsSinceEpoch / Timestamp::kMicroSecondsPerSecond);
@@ -109,10 +114,10 @@ void Logger::Imp::formatTime()
     }
     else
     {
-      ::gmtime_r(&secons, &tm_time);
+      ::gmtime_r(&seconds, &tm_time);
     }
     int len = snprintf(t_time, sizeof t_time, "%4d%02d%02d %02d:%02d:%02d",
-        tm_time.tm_year + 1900, tm_time.tm_mon + 1, tm_time.tm_day,
+        tm_time.tm_year + 1900, tm_time.tm_mon + 1, tm_time.tm_mday,
         tm_time.tm_hour, tm_time.tm_min, tm_time.tm_sec);
     assert(len == 17);
     (void)len;
@@ -164,7 +169,7 @@ Logger::Logger(SourceFile file, int line, bool toAbort)
 Logger::~Logger()
 {
   impl_.finish();
-  const LogStrem::Buffer& buf(stream().buffer());
+  const LogStream::Buffer& buf(stream().buffer());
   g_output(buf.data(), buf.length());
   if (impl_.level_ == FATAL)
   {
