@@ -2,7 +2,6 @@
 #define NETWORK_TCPSERVER_H
 
 #include "../baseCom/Atomic.h"
-#include "../baseCom/Types.h"
 #include "../baseCom/noncopyable.h"
 
 #include "TcpConnectoin.h"
