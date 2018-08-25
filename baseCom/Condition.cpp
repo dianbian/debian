@@ -3,7 +3,7 @@
 
 #include <errno.h>
 
-bool Condition::waitForSeconds(doule seconds)
+bool Condition::waitForSeconds(double seconds)
 {
 	struct timespec abstime;
 	//FIXME: use CLOCK_MONOTONIC or CLOCK_MONOTONIC_RAW to prevent time rewind.
@@ -16,5 +16,5 @@ bool Condition::waitForSeconds(doule seconds)
 	abstime.tv_nsec = static_cast<long>((abstime.tv_nsec + nanoseconds) % kNanoSecondsPerSecond);
 	
 	MutexLock::UnassignGuard ug(mutex_);
-	return ETIMEDOUT == pthread_cond_timewait(&pcond_, mutex_.getPthreadMutex(), &abstime);
+	return ETIMEDOUT == pthread_cond_timedwait(&pcond_, mutex_.getPthreadMutex(), &abstime);
 }

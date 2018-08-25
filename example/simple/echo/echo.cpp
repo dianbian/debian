@@ -1,13 +1,17 @@
 
 #include "../../../baseCom/Logging.h"
 
+#include "../../../netWork/EventLoop.h"
+#include "../../../netWork/Buffer.h"
+
 #include "echo.h"
 
-EchoServer::EchoServer(EventLoop* loop, const InetAddress& listenAdrr)
+EchoServer::EchoServer(EventLoop* loop, const InetAddress& listenAddr)
 	: server_(loop, listenAddr, "EchoServer")
 {
-	server_.setConnectionCallback(std::bind(&EchoServer::onConnection, this, _1));
-	server_.setMessageCallback(std::bind(&EchoServer::onMessage, this, _1, _2, _3));
+	server_.setConnectionCallback(std::bind(&EchoServer::onConnection, this, std::placeholders::_1));
+	server_.setMessageCallback(std::bind(&EchoServer::onMessage, this, std::placeholders::_1,
+				std::placeholders::_2, std::placeholders::_3));
 }
 
 void EchoServer::start()
@@ -18,15 +22,15 @@ void EchoServer::start()
 
 void EchoServer::onConnection(const TcpConnectionPtr& conn)
 {
-	LOG_INFO << "EchoServer - " << conn->peerAddr().toIpPort() << " ->"
+	/*LOG_INFO << "EchoServer - " << conn->peerAddress().toIpPort()*<< " ->"
 		<< conn->localAddress().toIpPort() << " is "
-		<< (conn->connected() ? "UP" : "DOWN");
+		<< (conn->connected() ? "UP" : "DOWN")*/
 }
 
-void EchoServer::onMessage(TcpConnectionPtr& conn, Buffer* buf, Timestamp time)
+void EchoServer::onMessage(const TcpConnectionPtr& conn, Buffer* buf, Timestamp time)
 {
-	string msg(buf->retrieveAllAsString());
-	LOG_INFO << conn->name() << " echo " << msg.size() << " bytes, "
-		<< "data received at " << time.toString();
-	conn->send(msg);
+  std::string msg(buf->retrieveAllAsString());
+	LOG_INFO << /*conn->name() << " echo " << msg.size() << " bytes, "
+		<< "data received at " << */time.toString();
+	//conn->send(msg);
 }

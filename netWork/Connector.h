@@ -7,6 +7,7 @@
 #include "InetAddress.h"
 
 #include <functional>
+#include <memory>
 
 class Channel;
 class EventLoop;
@@ -42,14 +43,14 @@ class Connector : public noncopyable, public std::enable_shared_from_this<Connec
   void handleWrite();
   void handleError();
   void retry(int sockfd);
-  int removeAndsetChannel();
+  int removeAndResetChannel();
   void resetChannel();
   
   EventLoop* loop_;
   InetAddress serverAddr_;
   bool connect_;  //atomic
   States state_;
-  std::unique<Channel> channel_;
+  std::unique_ptr<Channel> channel_;
   NewConnectionCallback newConnectionCallback_;
   int retryDelayMs_;
 };

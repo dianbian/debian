@@ -12,6 +12,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <strings.h>
+#include <assert.h>
 
 namespace detail
 {
@@ -66,7 +67,7 @@ inline void fillHMS(unsigned seconds, struct tm* utc)
 {
   utc->tm_sec = seconds % 60;
   unsigned minutes = seconds / 60;
-  utc->tm_min = minutes % 60；
+  utc->tm_min = minutes % 60;
   utc->tm_hour = minutes / 60;
 }
 
@@ -76,9 +77,9 @@ const int kSecondsPerDay = 24 * 60 * 60;
 
 struct TimeZone::Data
 {
-  vector<detail::Transition> transitions;
-  vector<detail::Localtime> localtimes;
-  vector<std::string> names;
+	std::vector<detail::Transition> transitions;
+	std::vector<detail::Localtime> localtimes;
+	std::vector<std::string> names;
   std::string abbreviation;
 };
 
@@ -106,7 +107,7 @@ class File : public noncopyable
     char buf[n];
     ssize_t nr = fread(buf, 1, n, fp_);
     if (nr != n)
-      throw logical_error("no enough data");
+      throw logic_error("no enough data");
     return std::string(buf, n);
   }
   
@@ -115,7 +116,7 @@ class File : public noncopyable
     int32_t x = 0;
     ssize_t nr = ::fread(&x , 1, sizeof(int32_t), fp_);
     if (nr != sizeof(int32_t))
-      throw logical_error("bad int32_t data");
+      throw logic_error("bad int32_t data");
     return be32toh(x);
   }
   
@@ -124,12 +125,12 @@ class File : public noncopyable
     uint8_t x = 0;
     ssize_t nr = ::fread(&x, 1, sizeof(uint8_t), fp_);
     if (nr != sizeof(uint8_t))
-      throw logical_error("bad uint8_t data");
+      throw logic_error("bad uint8_t data");
     return x;
   }
   
  private:
-  FILE* fp;
+  FILE* fp_;
 };
 
 bool readTimeZoneFile(const char* zonefile, struct TimeZone::Data* data)
@@ -141,36 +142,36 @@ bool readTimeZoneFile(const char* zonefile, struct TimeZone::Data* data)
     {
       std::string head = f.readBytes(4);
       if (head != "TZif")
-        throw logical_error("bad head");
+        throw logic_error("bad head");
       std::string version = f.readBytes(1);
       f.readBytes(15);
       
-      int32_t isgmtcnt = f.readBytes32();
-      int32_t isstdcnt = f.readBytes32();
-      int32_t leapcnnt = f.readBytes32();
-      int32_t timecnt = f.readBytes32();
-      int32_t typecnt = f.readBytes32();
-      int32_t charcnt= f.readBytes32();
+      int32_t isgmtcnt = f.readInt32();
+      int32_t isstdcnt = f.readInt32();
+      int32_t leapcnnt = f.readInt32();
+      int32_t timecnt = f.readInt32();
+      int32_t typecnt = f.readInt32();
+      int32_t charcnt= f.readInt32();
       
-      vector<int32_t> trans;
-      vector<int> localtimes;
+			std::vector<int32_t> trans;
+			std::vector<int> localtimes;
       trans.reserve(timecnt);
       for (int i = 0; i < timecnt; ++i)
       {
-        trans.push_back(f.readBytes32());
+        trans.push_back(f.readInt32());
       }
       
       for (int i = 0; i < timecnt; ++i)
       {
-        uint8_t local = f.readBytes32();
+        uint8_t local = f.readUInt8();
         localtimes.push_back(local);
       }
       
       for (int i = 0; i < typecnt; ++i)
       {
-        int32_t gmtoff = f.readBytes32();
-        uint8_t isdst = f.readBytes32();
-        uint8_t abbrind = f.readBytes32();
+        int32_t gmtoff = f.readInt32();
+        uint8_t isdst = f.readUInt8();
+        uint8_t abbrind = f.readUInt8();
         
         data->localtimes.push_back(Localtime(gmtoff, isdst, abbrind));
       }
@@ -179,17 +180,17 @@ bool readTimeZoneFile(const char* zonefile, struct TimeZone::Data* data)
       {
         int localIdx = localtimes[i];
         time_t localtime = trans[i] + data->localtimes[localIdx].gmtOffset;
-        data->transitions.push_back(Transition(trans[i], localtime, localIdx);
+        data->transitions.push_back(Transition(trans[i], localtime, localIdx));
       }
       
-      data->abbreviation = f.readBytes32(charcnt);
+      data->abbreviation = f.readBytes(charcnt);
       
       // leapcnt
       (void)leapcnnt;
       (void)isstdcnt;
       (void)isgmtcnt;
     }
-    catch (logical_error& e)
+    catch (logic_error& e)
     {
       fprintf(stderr, "%s\n", e.what());
     }
@@ -206,7 +207,7 @@ const Localtime* findLocaltime(const TimeZone::Data& data, Transition sentry, Co
   }
   else 
   {
-    vector<Transition>::const_iterator transI = lower_bound(data.transitions.begin(), 
+    std::vector<Transition>::const_iterator transI = lower_bound(data.transitions.begin(), 
                                                             data.transitions.end(), sentry, comp);
     if (transI != data.transitions.end())
     {
@@ -244,7 +245,7 @@ TimeZone::TimeZone(int eastOfUtc, const char* name)
   data_->abbreviation = name;
 }
 
-struct tm TimeZone::toLocalTime(time_t secons) const
+struct tm TimeZone::toLocalTime(time_t seconds) const
 {
   struct tm localTime;
   bzero(&localTime, sizeof localTime);
@@ -252,7 +253,7 @@ struct tm TimeZone::toLocalTime(time_t secons) const
   const Data& data(*data_);
   
   detail::Transition sentry(seconds, 0, 0);
-  const detail::Localtime* local = findLocaltime（data, sentry, detail::Comp(true));
+  const detail::Localtime* local = findLocaltime(data, sentry, detail::Comp(true));
   
   if (local)
   {
@@ -260,7 +261,7 @@ struct tm TimeZone::toLocalTime(time_t secons) const
     ::gmtime_r(&localSeconds, &localTime);  // FIXME fromUtcTime
     localTime.tm_isdst = local->isDst;
     localTime.tm_gmtoff = local->gmtOffset;
-    localTime.tm_zone = &data.abbreviation[local_>abbrInx];
+    localTime.tm_zone = &data.abbreviation[local->arrbInx];
   }
   
   return localTime;

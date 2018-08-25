@@ -4,7 +4,7 @@
 #include "Connector.h"
 #include "Channel.h"
 #include "EventLoop.h"
-#include "SockersOps.h"
+#include "SocketsOps.h"
 
 #include <errno.h>
 
@@ -28,11 +28,11 @@ void Connector::start()
 
 void Connector::startInLoop()
 {
-  loop_->assertInLoopThead();
+  loop_->assertInLoopThread();
   assert(state_ == kDisconnected);
   if (connect_)
   {
-    connect_();
+    connect();
   }
   else
   {
@@ -48,7 +48,7 @@ void Connector::stop()
 
 void Connector::stopInLoop()
 {
-  loop_->assertInLoopThead();
+  loop_->assertInLoopThread();
   if (state_ == kConnecting)
   {
     setState(kDisconnected);
@@ -95,7 +95,7 @@ void Connector::connect()
 
 void Connector::restart()
 {
-  loop_->assertInLoopThead();
+	loop_->assertInLoopThread();
   setState(kDisconnected);
   retryDelayMs_ = kInitRetryDelayMs;
   connect_ = true;
@@ -107,8 +107,8 @@ void Connector::connecting(int sockfd)
   setState(kConnecting);
   assert(!channel_);
   channel_.reset(new Channel(loop_, sockfd));
-  channel_.setWriteCallback(std::bind(&Connector::handleWrite, this));
-  channel_.setErrorCallback(std::bind(&Connector::handleError, this));
+  channel_->setWriteCallback(std::bind(&Connector::handleWrite, this));
+  channel_->setErrorCallback(std::bind(&Connector::handleError, this));
   channel_->enableWriting();
 }
 
@@ -119,6 +119,7 @@ int Connector::removeAndResetChannel()
   int sockfd = channel_->fd();
   //can't reset channel here, because we are inside Channel::handleEvent
   loop_->queueInLoop(std::bind(&Connector::resetChannel, this));
+	return sockfd;
 }
 
 void Connector::resetChannel()
@@ -150,7 +151,7 @@ void Connector::handleWrite()
       setState(kConnected);
       if (connect_)
       {
-        netConnectionCallback_(sockfd);  
+        newConnectionCallback_(sockfd);  
       }
       else
       {
@@ -184,7 +185,7 @@ void Connector::retry(int sockfd)
   {
     LOG_INFO << "Connector::retry - Retry connecting to " << serverAddr_.toIpPort()
              << " in " << retryDelayMs_ << "milliseconds. "; 
-    loop_->runAfter(retryDelayMs_ / 1000.0 std::bind(&Connector::startInLoop, shared_from_this()));
+    loop_->runAfter(retryDelayMs_ / 1000.0, std::bind(&Connector::startInLoop, shared_from_this()));
     retryDelayMs_ = std::min(retryDelayMs_ * 2, kMaxRetryDelayMs);
   }
   else

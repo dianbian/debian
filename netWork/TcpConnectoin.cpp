@@ -4,8 +4,7 @@
 	> Created Time: Sat 14 Jul 2018 10:39:03 AM CST
  ************************************************************************/
 
-#include "../BaseCom/Logging.h"
-#include "../BaseCom/WeakCallback.h"
+#include "../baseCom/Logging.h"
 
 #include "TcpConnectoin.h"
 #include "Channel.h"
@@ -46,11 +45,11 @@ TcpConnectoin::TcpConnectoin(EventLoop* loop,
                             peerAddress_(peerAddress),
                             highWaterMark_(64 * 1024 * 1024)
 {
-  channel_->setReadCallback(std::bind(&TcpConnectoin::handleRead, this, _1));
+  channel_->setReadCallback(std::bind(&TcpConnectoin::handleRead, this, std::placeholders::_1));
   channel_->setWriteCallback(std::bind(&TcpConnectoin::handleWrite, this));
   channel_->setCloseCallback(std::bind(&TcpConnectoin::handleClose, this));
   channel_->setErrorCallback(std::bind(&TcpConnectoin::handleError, this));
-  LOG_DEBUG << "TcpConnectoin::ctor[" << name_ << "] at << this << " fd= " << sockfd;
+  LOG_DEBUG << "TcpConnectoin::ctor[" << name_ << "] at " << this << " fd= " << sockfd;
   socket_->setKeepAlive(true);
 }
 
@@ -128,7 +127,7 @@ void TcpConnectoin::sendInLoop(const void* data, size_t len)
   //if no thing in output queue, try writing directly
   if (!channel_->isWriting() && outputBuffer_.readableBytes() == 0)
   { //outputBuffer_ 类内全局变量, 用来保存全部数据, 分批次发送
-    nwrote = netsocket::write(channel_->fd(), data, len);
+    nwrote = netsockets::write(channel_->fd(), data, len);
     if (nwrote >= 0)
     {
       remaining = len - nwrote;
@@ -142,7 +141,7 @@ void TcpConnectoin::sendInLoop(const void* data, size_t len)
       nwrote = 0;
       if (errno != EWOULDBLOCK)
       {
-        LOG_SYSERR << ""TcpConnectoin::sendInLoop;
+        LOG_SYSERR << "TcpConnectoin::sendInLoop";
         if (errno == EPIPE || errno == ECONNRESET)
         {
           faultError = true;
@@ -199,7 +198,7 @@ void TcpConnectoin::forceCloseWithDelay(double seconds)
   if (state_ == kConnected || state_ == kDisconnecting)
   {
     setState(kDisconnecting);
-    loop_->runAfter(seconds, makeWeakCallback(shared_from_this(), &TcpConnectoin::forceClose());
+    loop_->runAfter(seconds, makeWeakCallback(shared_from_this(), &TcpConnectoin::forceClose));
     //not forceCloseInLoop to avoid race condition
   }
 }
@@ -278,7 +277,7 @@ void TcpConnectoin::connectEstablished()
 
 void TcpConnectoin::connectDestroyed()
 {
-  loop->assertInLoopThread();
+  loop_->assertInLoopThread();
   if (state_ == kConnected)
   {
     setState(kConnected);
@@ -315,7 +314,7 @@ void TcpConnectoin::handleWrite()
   loop_->assertInLoopThread();
   if (channel_->isWriting())
   {
-    ssize_t n = netsocket::write(channel_->fd(), outputBuffer_.peek(), outputBuffer_.readableBytes());
+    ssize_t n = netsockets::write(channel_->fd(), outputBuffer_.peek(), outputBuffer_.readableBytes());
     if (n > 0)
     {
       outputBuffer_.retrieve(n);

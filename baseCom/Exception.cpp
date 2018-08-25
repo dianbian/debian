@@ -14,7 +14,7 @@ Exception::Exception(const std::string& msg) : message_(msg)
 	fillStackTrace();
 }
 
-Exception ~Exception() throw()
+Exception::~Exception() throw()
 {
 	
 }
@@ -24,7 +24,7 @@ const char* Exception::what() const throw()
 	return message_.c_str();
 }
 
-const char* Exception::stackTrace const throw()
+const char* Exception::stackTrace() const throw()
 {
 	return stack_.c_str();
 }
@@ -47,7 +47,7 @@ void Exception::fillStackTrace()
 }
 
 
-string demangle(const char *symbol)
+/*std::string demangle(const char *symbol)
 {
     size_t size = 0;
     int status = 0;
@@ -55,9 +55,9 @@ string demangle(const char *symbol)
     char *demangled = NULL;
     //first, try to demangle a c++ name
     if (sscanf(symbol, "%*[^(]%*[^_]%127[^)+]", temp) == 1) {
-        if ((demangled = abi::__cxa_demangle(temp, NULL, &size,
+       // if ((demangled = abi::__cxa_demangle(temp, NULL, &size,
                         &status)) != NULL) {
-            string result(demangled);
+            std::string result(demangled);
             free(demangled);
             return result;
         }
@@ -68,4 +68,4 @@ string demangle(const char *symbol)
     }
     //if all else fails, just return the symbol
     return symbol;
-}
+}*/

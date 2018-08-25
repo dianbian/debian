@@ -1,8 +1,9 @@
-#include "../../../netWork/EventLoop.h" 
 #include "../../../netWork/InetAddress.h"
-//#include "../../../netWork/TcpServer.h"
-
+#include "../../../netWork/TcpServer.h"
 #include "../../../baseCom/Timestamp.h"
+
+class EventLoop;
+class Buffer;
 
 class EchoServer
 {

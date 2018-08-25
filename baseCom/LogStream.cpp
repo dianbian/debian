@@ -3,9 +3,9 @@
 
 #include <algorithm>
 #include <limits>
-#include <assert>
 #include <type_traits>
 
+#include <assert.h>
 #include <string.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -20,10 +20,10 @@ namespace detail
 {
 const char digits[] = "9876543210123456789";
 const char* zero = digits + 9;
-static_assert(sizeof(digits) == 20);
+static_assert(sizeof(digits) == 20, "dec length is error");
 
 const char digitsHex[] = "0123456789ABCDEF";
-static_assert(sizeof digitsHex == 17);
+static_assert(sizeof digitsHex == 17, "hex length is error");
 
 //Efficient Integer to String Conversions, by Matthew Wilson.
 template<typename T>
@@ -37,11 +37,11 @@ size_t convert(char buf[], T value)
     int lsd = static_cast<int>(i % 10);
     i /= 10;
     *p++ = zero[lsd];
-  }while (i 1= 0);
+  }while (i != 0);
   
   if (value < 0)
   {
-    *p++ = "-";
+    *p++ = '-';
   }
   *p = '\0';
   std::reverse(buf, p);
@@ -68,7 +68,7 @@ size_t convertHex(char buf[], uintptr_t value)
 }
 
 template class FixedBuffer<kSmallBuffer>;
-template class FixedBuffer<KLargeBuffer>;
+template class FixedBuffer<kLargeBuffer>;
 }
 
 template<int SIZE>
@@ -92,16 +92,16 @@ void FixedBuffer<SIZE>:cookieEnd()
 
 void LogStream::staticCheck()
 {
-  static_assert(kMaxNumericsize - 10 > std::numeric_limits<double>::digits10);
-  static_assert(kMaxNumericsize - 10 > std::numeric_limits<long double>::digits10);
-  static_assert(kMaxNumericsize - 10 > std::numeric_limits<long>::digits10);
-  static_assert(kMaxNumericsize - 10 > std::numeric_limits<long long>::digits10);
+  static_assert(kMaxNumericSize - 10 > std::numeric_limits<double>::digits10, "error ?");
+  static_assert(kMaxNumericSize - 10 > std::numeric_limits<long double>::digits10, "error ?");
+  static_assert(kMaxNumericSize - 10 > std::numeric_limits<long>::digits10, "error ?");
+  static_assert(kMaxNumericSize - 10 > std::numeric_limits<long long>::digits10, "error ?");
 }
 
 template<typename T>
 void LogStream::formatInteger(T v)
 {
-  if (buffer_.avail() >= kMaxNumericsize)
+  if (buffer_.avail() >= kMaxNumericSize)
   {
     size_t len = convert(buffer_.current(), v);
     buffer_.add(len);
@@ -178,9 +178,9 @@ LogStream LogStream::operator<<(double v)
 template<typename T>
 Fmt::Fmt(const char* fmt, T val)
 {
-  static_assert(std::is_arithmetic<T>::value == true);
+  static_assert(std::is_arithmetic<T>::value == true, "this is static_assert.");
   
-  length_ = snprintf(buf_, sizeof buf, fmt, val);
+  length_ = snprintf(buf_, sizeof buf_, fmt, val);
   assert(static_cast<size_t>(length_) < sizeof buf_);
 }
 
@@ -194,6 +194,6 @@ template Fmt::Fmt(const char* fmt, unsigned int);
 template Fmt::Fmt(const char* fmt, long);
 template Fmt::Fmt(const char* fmt, unsigned long);
 template Fmt::Fmt(const char* fmt, long long);
-template Fmt::Fmt(const char* fmt, unsigned long long;
+template Fmt::Fmt(const char* fmt, unsigned long long);
 template Fmt::Fmt(const char* fmt, float);
 template Fmt::Fmt(const char* fmt, double);

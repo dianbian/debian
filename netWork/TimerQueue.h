@@ -43,8 +43,8 @@ class TimerQueue : public noncopyable
 		typedef std::pair<Timer*, int64_t> ActiveTimer;
 		typedef std::set<ActiveTimer> ActiveTimerSet;
 		
-		void addTimeInLoop(Timer* timer);
-		void cancelInLoop(TimerId, timerId);
+		void addTimerInLoop(Timer* timer);
+		void cancelInLoop(TimerId timerId);
 		//called when timerId alarms
 		void handleRead();
 		//move out all expired timers
@@ -53,7 +53,7 @@ class TimerQueue : public noncopyable
 		bool insert(Timer* timer);
 		
 		EventLoop* loop_;
-		const int timerId_;
+		const int timerfd_;
 		Channel timerfdChannel_;
 		//Tiemr list sorted by expiration
 		TimerList timers_;

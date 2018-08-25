@@ -13,7 +13,7 @@ class Logger
   enum LogLevel
   {
     TRACE,
-    DEBUG1,
+    DEBUG,
     INFO,
     WARN,
     ERROR,

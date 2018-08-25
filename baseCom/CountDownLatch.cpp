@@ -2,7 +2,7 @@
 #include "CountDownLatch.h"
 
 CountDownLatch::CountDownLatch(int count) : 
-        Mutex_(), condition_(mutex_), count_(count)
+        mutex_(), condition_(mutex_), count_(count)
 {
 	
 }

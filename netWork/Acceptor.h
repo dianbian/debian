@@ -22,7 +22,7 @@ class Acceptor : public noncopyable
 	 ~Acceptor();
 
 	 void setNewConnectionCallback(const NewConnetionCallback& cb)
-	 { newconnectionCallback_ = cb; }
+	 { newConnectionCallback_ = cb; }
 
 	 bool listening() const { return listening_; }
 	 void listen();
@@ -33,7 +33,7 @@ class Acceptor : public noncopyable
 	 EventLoop* loop_;
 	 Socket acceptSocket_;
 	 Channel acceptChannel_;
-	 NewConnetionCallback newconnectionCallback_;
+	 NewConnetionCallback newConnectionCallback_;
 	 bool listening_;
 	 int idleFd_;
 };

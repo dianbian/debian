@@ -9,7 +9,7 @@
 class CountDownLatch : public noncopyable
 {
 	public:
-	    explicit CountDownLatch(int count);
+	  explicit CountDownLatch(int count);
 		
 		void wait();
 		
@@ -17,10 +17,10 @@ class CountDownLatch : public noncopyable
 		
 		int getCount() const;
 		
-	private：
-	    mutable MutexLock mutex_;
+	private:
+	  mutable MutexLock mutex_;
 		Condition condition_;
 		int count_;
 };
 
-#endif BASECOM_COUNTDOWNLATCH_H
+#endif //BASECOM_COUNTDOWNLATCH_H

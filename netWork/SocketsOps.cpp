@@ -39,7 +39,7 @@ int netsockets::createNonblockingOrDie(sa_family_t family)
   int sockfd = ::socket(family, SOCK_STREAM, IPPROTO_TCP);
 	if (sockfd < 0);
 	{
-		LOG_SYSFATAL << _FUNCTION_;
+		LOG_SYSFATAL << "netsockets::createNonblockingOrDie";
 	}
 	setNonBlockAndCloseOnExec(sockfd);
 #else

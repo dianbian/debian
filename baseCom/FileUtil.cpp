@@ -14,7 +14,7 @@ AppendFile::AppendFile(StringArg filename)
     : fp_(::fopen(filename.c_str(), "ae")), writtenBytes_(0) // 'e' for O_CLOEXEC
 {
   assert(fp_);
-  ::setbuffer(fp_, bffer_, sizeof buffer_);
+  ::setbuffer(fp_, buffer_, sizeof buffer_);
   //posix_fadvise POSIX_FADV_DONTNEED 
 }
 
@@ -56,7 +56,7 @@ size_t AppendFile::write(const char* logline, size_t len)
 }
 
 ReadSmallFile::ReadSmallFile(StringArg filename)
-    : fd_(::open(filename.c_str(), O_RDONLY | O_CLOEXEC), err_(0)
+    : fd_(::open(filename.c_str(), O_RDONLY | O_CLOEXEC)), err_(0)
 {
   buf_[0] = '\0';
   if (fd_ < 0)
@@ -77,7 +77,7 @@ template<typename String>
 int ReadSmallFile::readToString(int maxSize, String* content,
       int64_t* fileSize, int64_t* modifyTime, int64_t* createTime)
 {
-  static_assert(sizeof(off_t) == 8);
+  static_assert(sizeof(off_t) == 8, "off_t != 8");
   assert(content != NULL);
   int err = err_;
   if (fd_ >= 0)
@@ -113,7 +113,7 @@ int ReadSmallFile::readToString(int maxSize, String* content,
     }
     while( content->size() < implicit_cast<size_t>(maxSize))
     {
-      size_t toRead = std::min(implicit_cast<size_t>(maxSize) - content->size(), sizeof buf_));
+      size_t toRead = std::min(implicit_cast<size_t>(maxSize) - content->size(), sizeof buf_);
       ssize_t n = ::read(fd_, buf_, toRead);
       if (n > 0)
       {
@@ -154,8 +154,8 @@ int ReadSmallFile::readToBuffer(int* size)
   return err;
 }
 
-template int readFile(StringArg filename, int maxSize, string* content, 
+template int readFile(StringArg filename, int maxSize, std::string* content, 
                       int64_t*, int64_t*, int64_t*);
 
-template int ReadSmallFile::readToString(int maxSize, string* content,
+template int ReadSmallFile::readToString(int maxSize, std::string* content,
                       int64_t*, int64_t*, int64_t*);

@@ -8,7 +8,6 @@
 
 #include <map>
 #include <functional>
-#include <memory>
 
 class Acceptor;
 class EventLoop;
@@ -31,7 +30,7 @@ class TcpServer : public noncopyable
 
 	const std::string& ipPort() const { return ipPort_; }
 	const std::string& name() const { return name_; }
-	EventLoop* getLoop() const { return loop_: }
+	EventLoop* getLoop() const { return loop_; }
   
 	//set the number of threads for handling input.
 	//always accepts new connection in loop's thread.
@@ -41,7 +40,7 @@ class TcpServer : public noncopyable
 	//N means a thread pool with N threads, new connections are assigned on a round-robin basis.
 	void setThreadNum(int numThreads);
 	void setThreadInitCallback(const ThreadInitCallback& cb)
-	{ ThreadInitCallback_ = cb; }
+	{ threadInitCallback_ = cb; }
 	//valid after calling start()  why?
 	std::shared_ptr<EventLoopThreadPool> threadPool()
 	{ return threadPool_;	}
@@ -52,7 +51,7 @@ class TcpServer : public noncopyable
 
 	//set connection callback, not thread safe.
 	void setConnectionCallback(const ConnectionCallback& cb)
-	{ ConnectionCallback_ = cb; }
+	{ connectionCallback_ = cb; }
 	//set message callback, not thread safe.
 	void setMessageCallback(const MessageCallback& cb)
 	{ messageCallback_ = cb; }
@@ -71,14 +70,14 @@ class TcpServer : public noncopyable
 	typedef std::map<std::string, TcpConnectoinPtr> ConnectionMap;
 
 	EventLoop* loop_;  //this is the acceptor loop
-	const std::string inPort_;
+	const std::string ipPort_;
 	const std::string name_;
 	std::unique_ptr<Acceptor> acceptor_; //avoid revealing acceptor
 	std::shared_ptr<EventLoopThreadPool> threadPool_;
 	ConnectionCallback connectionCallback_;
 	MessageCallback messageCallback_;
 	WriteCompleteCallback writeCompleteCallback_;
-	ThreadInitCallback threadinitCallback_;
+	ThreadInitCallback threadInitCallback_;
 	AtomicInt32 started_;
 
 	//always in loop thread.

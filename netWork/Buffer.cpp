@@ -1,9 +1,11 @@
 
+#include "../baseCom/Types.h"
+
 #include "Buffer.h"
 #include "SocketsOps.h"
 
 #include <errno.h>
-#incldue <sys/uio.h>
+#include <sys/uio.h>
 
 const char Buffer::kCRLF[] = "\r\n";
 
@@ -23,7 +25,7 @@ ssize_t Buffer::readFd(int fd, int* savedErrno)
 	//when there is enough space int this buffer, don't read into extrabuf.
 	//when extrabuf is used, we read 128k-1 bytes at most.
 	const int iovcnt = (writable < sizeof extrabuf) ? 2 : 1;
-	const ssize_t n = sockets::readv(fd, vec, iovcnt);
+	const ssize_t n = netsockets::readv(fd, vec, iovcnt);
 	if (n < 0)
 		*savedErrno = errno;
 	else if (implicit_cast<size_t>(n) <= writable)

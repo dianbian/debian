@@ -21,7 +21,7 @@ class Socket : public noncopyable
   
   int fd() const { return sockfd_; }
   //return true if success.
-  bool getTcpInfo(struct info*) const;
+  bool getTcpInfo(struct tcp_info*) const;
   bool getTcpInfoString(char* buf, int len) const;
   
   //abort if address in use

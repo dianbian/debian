@@ -6,7 +6,7 @@
 #include "Channel.h"
 #include "Poller.h"
 #include "SocketsOps.h"
-#include "TimerQueue.h""
+#include "TimerQueue.h"
 
 #include <functional>
 
@@ -53,7 +53,7 @@ EventLoop::EventLoop() :
           looping_(false), 
 					quit_(false),
 					eventHandling_(false),
-					callingPengingFunctors_(false),
+					callingPendingFunctors_(false),
 					iteration_(0),
 					threadId_(Poller::newDefaultPoller(this)),
 					timerQueue_(new TimerQueue(this)),

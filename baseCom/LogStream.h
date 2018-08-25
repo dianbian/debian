@@ -12,8 +12,8 @@
 
 namespace detail
 {
-const int KSamllBuffer = 4000;
-const int KLargeBuffer = 4000 * 1000;
+const int kSamllBuffer = 4000;
+const int kLargeBuffer = 4000 * 1000;
 
 template<int SIZE>
 class FixedBuffer : public noncopyable
@@ -65,13 +65,14 @@ class FixedBuffer : public noncopyable
   char data_[SIZE];
   char* cur_;
 };
+
 }
 
 class LogStream : public noncopyable
 {
   typedef LogStream self;
  public:
-  typedef detail::FixedBuffer<detail::KSamllBuffer> Buffer;
+  typedef detail::FixedBuffer<detail::kSamllBuffer> Buffer;
   
   self& operator<<(bool v)
   {
@@ -123,7 +124,7 @@ class LogStream : public noncopyable
   self& operator<<(const StringPiece& v)
   {
     buffer_.append(v.data(), v.size());
-  }
+	}
   self& operator<<(const Buffer& v)
   {
     *this << v.toStringPiece();
@@ -141,7 +142,7 @@ class LogStream : public noncopyable
   void formatInteger(T);
   
   Buffer buffer_;  //may be FixedBuffer buffer_ ?
-  static const int KMaxNumericSize = 32;
+  static const int kMaxNumericSize = 32;
 };
 
 class Fmt

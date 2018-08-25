@@ -12,10 +12,11 @@
 #include "../baseCom/StringPiece.h"
 #include "../baseCom/Atomic.h"
 #include "../baseCom/noncopyable.h"
+#include "../baseCom/any.h"
 
 #include "Callbacks.h"
 #include "Buffer.h"
-#include "InetAddress"
+#include "InetAddress.h"
 
 #include <memory>
 
@@ -27,7 +28,7 @@ class Socket;
 
 //Tcp connection, for both client and server usage.
 //This is an interface class, so do not expose too much details.
-class TcpConnectoin : public noncopyable, std::enable_shared_from_this<TcpConnectoin>
+class TcpConnectoin : public noncopyable, public std::enable_shared_from_this<TcpConnectoin>
 {
 	//constructs a TcpConnectoin with a connected sockfd
 	//user should not create this object. (don‘t new)
@@ -38,10 +39,10 @@ class TcpConnectoin : public noncopyable, std::enable_shared_from_this<TcpConnec
   
   EventLoop* getLoop() const { return loop_; }
   const std::string& name() const { return name_; }
-  cosnt InetAddress& localAddress() const { return localAddr_; }
-  const InetAddress& peerAddress() const { return peerAddr_; }
+  const InetAddress& localAddress() const { return localAddress_; }
+  const InetAddress& peerAddress() const { return peerAddress_; }
   bool connected() const { return state_ == kConnected; }
-  bool disconnected() const { return state_ == kDisconnected_; }
+  bool disconnected() const { return state_ == kDisconnected; }
   bool getTcpInfo(struct tcp_info*) const; //return true if success.
   std::string getTcpInfoString() const;
   
@@ -57,8 +58,8 @@ class TcpConnectoin : public noncopyable, std::enable_shared_from_this<TcpConnec
   void stopRead();
   bool isReading() const { return reading_; }  //not thread safe
   
-  void setContext(cosnt any& context) { context_ = context; }
-  const any& getContext() cosnt { return context_; }
+  void setContext(const any& context) { context_ = context; }
+  const any& getContext() const { return context_; }
   
   void setConnectionCallback(const ConnectionCallback& cb)
   { connectionCallback_ = cb; }
@@ -66,7 +67,7 @@ class TcpConnectoin : public noncopyable, std::enable_shared_from_this<TcpConnec
   { messageCallback_ = cb; }
   void setWriteCompleteCallback(const WriteCompleteCallback cb)
   { writeCompleteCallback_ = cb; }
-  void setHighWaterMarkCallback(const HighWaterCallback& cb, size_t highWaterMark)
+  void setHighWaterMarkCallback(const HighWaterMarkCallback& cb, size_t highWaterMark)
   { highWaterMarkCallback_ = cb; highWaterMark_ = highWaterMark; }
   //internal use only
   void setCloseCallback(const CloseCallback& cb) { closeCallback_ = cb; }
@@ -98,14 +99,14 @@ class TcpConnectoin : public noncopyable, std::enable_shared_from_this<TcpConnec
   StateE state_;   //use atomic variable
   bool reading_;
   //don't expose thos classes to client.
-  std::unique<Socket> socket_;
-  std::unique<Channel> channel_;
-  const InetAddress localAddr_;
-  const InetAddress peerAddr_;
+  std::unique_ptr<Socket> socket_;
+  std::unique_ptr<Channel> channel_;
+  const InetAddress localAddress_;
+  const InetAddress peerAddress_;
   ConnectionCallback connectionCallback_;
   MessageCallback messageCallback_;
   WriteCompleteCallback writeCompleteCallback_;
-  HighWaterCallback highWaterMarkCallback_;
+  HighWaterMarkCallback highWaterMarkCallback_;
   CloseCallback closeCallback_;
   size_t highWaterMark_;
   Buffer inputBuffer_;

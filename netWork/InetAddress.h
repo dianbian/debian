@@ -41,7 +41,7 @@ class InetAddress : public copyable
 	//default copy/assignment are ok
 		
 	const struct sockaddr* getSockAddr() const { return netsockets::sockaddr_cast(&addr6_); }
-	void serSockAddrInet6(const struct sockaddr_in6& addr6) { addr6_ = addr6; }
+	void setSockAddrInet6(const struct sockaddr_in6& addr6) { addr6_ = addr6; }
 		
 	uint32_t inNetEndian() const;
 	uint16_t portNetEndian() const { return addr_.sin_port; }

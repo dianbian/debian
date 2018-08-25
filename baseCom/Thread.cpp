@@ -21,14 +21,14 @@ namespace CurrentThread
 	__thread int t_tidStringLength = 6;
 	__thread const char* t_threadName = "unknown";
 	const bool sameType = std::is_same<int, pid_t>::value;
-	static_assert(sameType);
+	static_assert(sameType, "what the fuck");
 }
 
 namespace detail
 {
 pid_t gettid()
 {
-	return static_cast<pid_t>(::sys/call(SYS_gettid));
+	return static_cast<pid_t>(::syscall(SYS_gettid));
 }
 
 void afterFork()
@@ -61,7 +61,7 @@ struct ThreadData
 	CountDownLatch* latch_;
 	
 	ThreadData(const ThreadFunc& func, const std::string& name, 
-	        pid_t* tid, CountDownLatch* latch_) 
+	        pid_t* tid, CountDownLatch* latch) 
 			: func_(func), name_(name), tid_(tid), latch_(latch)
 	{ }
 	
@@ -72,7 +72,7 @@ struct ThreadData
 		latch_->countDown();
 		latch_ = NULL;
 		
-		CurrentThread::t_threadName = name_.empty ? "mdThread" : name_.c_str();
+		CurrentThread::t_threadName = name_.empty() ? "mdThread" : name_.c_str();
 		::prctl(PR_SET_NAEM, CurrentThread::t_threadName);
 		try
 		{
@@ -84,7 +84,7 @@ struct ThreadData
 			CurrentThread::t_threadName = "crashed";
 			fprintf(stderr, "exception caught in Thread %s\n", name_.c_str());
 			fprintf(stderr, "reason: %s\n", ex.what());
-			fprintf(stderr, "stack trace %s\n, ex.stackTrace());
+			fprintf(stderr, "stack trace %s\n", ex.stackTrace());
 			abort();
 		}
 		catch (const std::exception& ex)
@@ -111,7 +111,7 @@ void* startThread(void* obj)
 }
 }
 
-bool CurrentThread::cachedTid()
+void CurrentThread::cacheTid()
 {
 	if (t_cachedTid == 0)
 	{
@@ -135,15 +135,15 @@ void CurrentThread::sleepUsec(int64_t usec)
 
 AtomicInt32 Thread::numCreated_;   //static
 
-Thread::thread(const ThreadFunc& func, const std::string& n)
+Thread::Thread(const ThreadFunc& func, const std::string& n)
     : started_(false), joined_(false), pthreadId_(0), tid_(0), func_(func), name_(n), latch_(1)
 {
 	setDefaultName();
 }
 
 #ifdef __GXX_EXPERIMENTAL_CXX0X__
-Thread::thread(ThreadFunc& func, const std::string& n)
-    started_(false), joined_(false), pthreadId_(0), tid_(0), func_(std::move(func)), name_(n), latch_(1)
+Thread::Thread(ThreadFunc&& func, const std::string& n)
+    : started_(false), joined_(false), pthreadId_(0), tid_(0), func_(std::move(func)), name_(n), latch_(1)
 {
 	setDefaultName();
 }
@@ -153,7 +153,7 @@ Thread::~Thread()
 {
 	if (started_ && !joined_)
 	{
-		ptread_detach(pthreadId_);
+		pthread_detach(pthreadId_);
 	}
 }
 
@@ -187,7 +187,7 @@ void Thread::start()
 	}
 }
 
-int thread::join()
+int Thread::join()
 {
 	assert(started_);
 	assert(!joined_);

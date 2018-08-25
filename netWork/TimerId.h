@@ -4,6 +4,9 @@
 
 #include "../baseCom/copyable.h"
 
+#include <stdint.h>
+#include <stdio.h>
+
 class Timer;
 
 //An opaque indentifier, for canceling Timer.

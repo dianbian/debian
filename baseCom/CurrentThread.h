@@ -40,7 +40,7 @@ namespace CurrentThread
 	
 	bool isMainThread();
 	
-	void sleepUesc(int64_t usec);
+	void sleepUsec(int64_t usec);
 }
 
 #endif //BASECOM_CURRENTTHREAD_H

@@ -11,7 +11,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <sys/resoure.h>
+#include <sys/resource.h>
 #include <sys/times.h>
 
 using namespace std;
@@ -37,7 +37,7 @@ int taskDirFilter(const struct dirent* d)
   return 0;
 }
 
-int scanDir(const char *dirPath, int (*filter)(const struct dirent *))
+int scanDir(const char *dirpath, int (*filter)(const struct dirent *))
 {
   struct dirent** namelist = NULL;
   int result = ::scandir(dirpath, &namelist, filter, alphasort);
@@ -52,6 +52,8 @@ int g_pageSize = static_cast<int>(::sysconf(_SC_PAGE_SIZE));
 
 }
 
+using namespace detail;
+
 string ProcessInfo::pidString()
 {
   char buf[32];
@@ -61,7 +63,7 @@ string ProcessInfo::pidString()
 
 string ProcessInfo::username()
 {
-  struct passwd pwd = NULL;
+  struct passwd pwd;
   struct passwd* result = NULL;
   char buf[8192];
   const char* name = "unknowuser";
@@ -95,6 +97,7 @@ bool ProcessInfo::isDebugBuild()
   return false;
 #else
   return true;
+#endif
 }
 
 string ProcessInfo::hostname()
@@ -136,7 +139,7 @@ string ProcessInfo::procStatus()
   return result;
 }
 
-string ProcessInfo::proStat()
+string ProcessInfo::procStat()
 {
   string result;
   readFile("/proc/self/stat", 65536, &result);
@@ -200,7 +203,7 @@ ProcessInfo::CpuTime ProcessInfo::cpuTime()
 int ProcessInfo::numThreads()
 {
   int result = 0;
-  string status = proStatus();
+  string status = procStatus();
   size_t pos = status.find("Threads:");
   if (pos != string::npos)
   {

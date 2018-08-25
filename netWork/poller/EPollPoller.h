@@ -17,7 +17,7 @@ class EPollPoller : public Poller
   virtual ~EPollPoller();
   
   virtual Timestamp poll(int timeoutMs, ChannelList* activeChannels);
-  virtual void updateChannel(channel* channel);
+  virtual void updateChannel(Channel* channel);
   virtual void removeChannel(Channel* channel);
   
  private:
@@ -25,7 +25,7 @@ class EPollPoller : public Poller
   
   static const char* operationToString(int op);
   
-  void fillActiveChannels(int numEvents, channelList* activeChannels) const;
+  void fillActiveChannels(int numEvents, ChannelList* activeChannels) const;
   
   void update(int operation, Channel* channel);
   

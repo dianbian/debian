@@ -1,5 +1,5 @@
 
-#include "../../baseCom/Logging.h"
+#include "../baseCom/Logging.h"
 
 #include "TcpServer.h"
 #include "Acceptor.h"
@@ -11,18 +11,18 @@
 
 #include <stdio.h>
 
-TcpServer::TcpServer(EventLoop* loop, const InetAddress& listenAddr,
-                    const std::string& nameArg, Option option)
-  : loop_(CHECK_NOTNULL(loop)),
-    ipPort_(listenAddr.toIpPort()),
-    name_(nameArg),
-    acceptor_(new Acceptor(loop, listenAddr, option == kReusePort)),
-    threadPool_(new EventLoopThreadPool(loop, name_),
-    connectionCallback_(defaultConnectionCallback),
-    messageCallback_(defaultMessageCallback),
-    nextConnId_(1),
+TcpServer::TcpServer(EventLoop* loop, const InetAddress& listenAddr,  const std::string& nameArg, Option option) 
+	 : loop_(/*CHECK_NOTNULL(*/loop), 
+		 ipPort_(listenAddr.toIpPort()), 
+		 name_(nameArg), 
+		 acceptor_(new Acceptor(loop, listenAddr, option == kReusePort)), 
+		 threadPool_(new EventLoopThreadPool(loop, name_),
+		 //connectionCallback_(defaultConnectionCallback), 
+		 messageCallback_(defaultMessageCallback),
+		 nextConnId_(1)
 {
-  acceptor_->setNewConnectionCallback(std::bind(&TcpServer::newConnection, this, _1, _2));
+  acceptor_->setNewConnectionCallback(std::bind(&TcpServer::newConnection, this, 
+				std::placeholders::_1, std::placeholders::_2));
 }
 
 TcpServer::~TcpServer()

@@ -78,7 +78,7 @@ public:
 	TimerId runEvery(double interval, TimerCallback&& cb);
 #endif
 
-    //internal usage
+  //internal usage
 	void wakeup();
 	void updateChannel(Channel* channel);
 	void removeChannel(Channel* channel);
@@ -107,7 +107,7 @@ private:
 	bool looping_;  //atomic
 	bool quit_; //atomic and shared between threads
 	bool eventHandling_;  //atomic
-	bool callingPendingFuntors_;  //atomic
+	bool callingPendingFunctors_;  //atomic
 	int64_t iteration_;
 	const pid_t threadId_;
 	Timestamp pollReturnTime_;

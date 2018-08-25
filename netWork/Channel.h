@@ -3,10 +3,10 @@
 #define NETWORK_CHANNEL_H
 
 #include "../baseCom/Timestamp.h"
-#include "../baseCom/noncopyeable.h"
+#include "../baseCom/noncopyable.h"
 
 #include <memory>
-#include <functionl>
+#include <functional>
 
 class EventLoop;
 
@@ -15,7 +15,7 @@ class EventLoop;
 //the file descriptor could be a socket,
 //an eventfd, a timerfd, or signalfd.
 
-class Channel : public noncopyeable
+class Channel : public noncopyable
 {
 	public:
 	  typedef std::function<void ()> EventCallback;
@@ -64,12 +64,12 @@ class Channel : public noncopyeable
 		EventLoop* ownerLoop() { return loop_; }
 		void remove();
 	private:
-	  static std::string eventsToString(fd, int ev);
+	  static std::string eventsToString(int fd, int ev);
 		void update();
 		void handleEventWithGuard(Timestamp receiveTime);
 		
 		static const int kNoneEvent;
-		static const int kReadEvent；
+		static const int kReadEvent;
 		static const int kWriteEvent;
 		
 		EventLoop* loop_;

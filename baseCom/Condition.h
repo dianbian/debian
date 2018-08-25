@@ -5,7 +5,7 @@
 #include "../baseCom/Mutex.h"
 #include "../baseCom/noncopyable.h"
 
-#include <pthread>
+#include <pthread.h>
 
 class Condition : public noncopyable
 {

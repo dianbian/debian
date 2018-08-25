@@ -6,7 +6,7 @@
 
 #include "../baseCom/noncopyable.h"
 #include "../baseCom/Timestamp.h"
-#include "EvenLoop.h"
+#include "EventLoop.h"
 
 #include <map>
 #include <vector>
@@ -18,7 +18,7 @@ class Poller : public noncopyable
  public:
   typedef std::vector<Channel*> ChannelList;
 	
-	Poller(EvenLoop* loop);
+	Poller(EventLoop* loop);
 	virtual ~Poller();
 	
 	//polls the I/O events.
@@ -33,11 +33,11 @@ class Poller : public noncopyable
 	
 	virtual bool hasChannel(Channel* channel) const;
 	
-	static Poller* newDefaultPoller(EvenLoop* loop);
+	static Poller* newDefaultPoller(EventLoop* loop);
 	
 	void asserInLoopThread() const
 	{
-		ownerLoop_->asserInLoopThread();
+		ownerLoop_->assertInLoopThread();
 	}
 	
  protected:
@@ -45,7 +45,7 @@ class Poller : public noncopyable
 	ChannelMap channels_;
 	
  private:
-  EvenLoop* ownerLoop_;
+  EventLoop* ownerLoop_;
 };
 
 #endif //NETWORK_POLLER_H

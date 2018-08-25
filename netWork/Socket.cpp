@@ -1,7 +1,7 @@
 
-#incldue "../baseCom/Logging.h"
+#include "../baseCom/Logging.h"
 
-#include "socket.h"
+#include "Socket.h"
 #include "InetAddress.h"
 #include "SocketsOps.h"
 
@@ -19,7 +19,7 @@ Socket::~Socket()
 bool Socket::getTcpInfo(struct tcp_info* tcpi) const
 {
   socklen_t len = sizeof(*tcpi);
-  bzreo(tcpi, len);
+  bzero(tcpi, len);
   return ::getsockopt(sockfd_, SOL_TCP, TCP_INFO, tcpi, &len) == 0;
 }
 
@@ -62,7 +62,7 @@ void Socket::listen()
 int Socket::accept(InetAddress* peeraddr)
 {
   struct sockaddr_in6 addr;
-  bzreo(&addr, sizeof addr);
+  bzero(&addr, sizeof addr);
   int connfd = netsockets::accept(sockfd_, &addr);
   if (connfd >= 0)
   {
@@ -98,7 +98,7 @@ void Socket::setReusePort(bool on)
                         &optval, static_cast<socklen_t>(sizeof optval));
   if (ret < 0 && on)
   {
-    LOG_SYSERR << "SO_REUSEPORT failed."
+    LOG_SYSERR << "SO_REUSEPORT failed.";
   }
 #else
   if (on)

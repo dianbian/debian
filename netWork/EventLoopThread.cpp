@@ -2,7 +2,7 @@
 #include "EventLoop.h"
 #include "EventLoopThread.h"
 
-EventLoopThread::EventLoopThread(const ThreadInitCallback& cb, const std::string name)
+EventLoopThread::EventLoopThread(const ThreadInitCallback& cb, const std::string& name)
     : loop_(NULL),
       exiting_(false),
       thread_(std::bind(&EventLoopThread::threadFunc, this), name),
@@ -18,7 +18,7 @@ EventLoopThread::~EventLoopThread()
   exiting_ = true;
   if (loop_ != NULL)   //not 100% race-free,
   {
-    loop_ = quit(); //but when EventLoopThread destructs, programming is exit.
+    loop_->quit(); //but when EventLoopThread destructs, programming is exit.
     thread_.join();
   }
 }
@@ -29,7 +29,7 @@ EventLoop* EventLoopThread::startLoop()
   thread_.start();
   
   {
-    MutexLockGuard lock(mutex);
+    MutexLockGuard lock(mutex_);
     while (loop_ == NULL)
     {
       cond_.wait();
@@ -48,7 +48,7 @@ void EventLoopThread::threadFunc()
   
   {
     MutexLockGuard lock(mutex_);
-    loop_ = loop;
+    loop_ = &loop;
     cond_.notify();
   }
   

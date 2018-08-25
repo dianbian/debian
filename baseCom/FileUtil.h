@@ -61,4 +61,4 @@ class AppendFile : noncopyable
   off_t writtenBytes_;
 };
 
-#endif BASECOM_FILEUTIL_H
+#endif //BASECOM_FILEUTIL_H

@@ -7,9 +7,9 @@
 
 #include <poll.h>
 
-const int Channel::KNoneEvent = 0;
+const int Channel::kNoneEvent = 0;
 const int Channel::kReadEvent = POLLIN | POLLPRI;
-const int Channel::kWritEvent = POLLOUT;
+const int Channel::kWriteEvent = POLLOUT;
 
 Channel::Channel(EventLoop* loop, int fd__) 
     : loop_(loop), 

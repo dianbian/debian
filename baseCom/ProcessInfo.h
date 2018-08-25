@@ -22,7 +22,7 @@ namespace ProcessInfo
   
   string hostname();
   string proname();
-  StringPiece proname(const string& stat);
+  StringPiece procname(const string& stat);
   
   //read /proc/self/status
   string procStatus();
@@ -48,3 +48,5 @@ namespace ProcessInfo
   int numThreads();
   std::vector<pid_t> threads(); 
 }
+
+#endif //BASECOM_PROCESSINFO_H
