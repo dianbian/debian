@@ -1,21 +1,18 @@
-TARGETNAME := lobby_svr1
-TARGETPATH := ../bin
+TARGETNAME := echo
+TARGETPATH := ../../bin
 OBJECTPATH := ../../obj/$(TARGETNAME)
 # 0 -- Application; 1 -- Static library; 2 -- Dynamic library
 TARGETTYPE = 0
-TARGETINCS = -I../include -I../productinterface -I../majiang -I../wrbuyu -I../ddz -I../../lib/include -I../../protocol
-TARGETLIBS = ../../lib/lib/GameProvider.a ../../lib/lib/Epoll.a ../../lib/lib/Common.a ../../lib/lib/libaes.a ../../lib/lib/ODBCExt.a ../../lib/lib/libonsclient4cpp.a 
+TARGETINCS = -I ../../../baseCom/ -I ../../../netWork/
+
 
 CPP = g++
-DEBUG = -g -DDEBUG -D_REENTRANT -w -D_DEBUG_TEST
+DEBUG = -g -DDEBUG -D_REENTRANT -w -std=c++11
 RELEASE = -s -O2
 CPPFLAGS  = $(TARGETINCS)
-LINKFLAGS = $(TARGETLIBS) -lpthread -lrt -lnsl -lz -lgcc_s -lodbc -ldl
-TARGETSRCS = ${wildcard *.c *.cpp ../majiang/*cpp ../wrbuyu/*cpp ../ddz/*.cpp}
-
-#TARGETSRCS = main.cpp
-#OBJS = $(addprefix $(OBJECTPATH)/, $(patsubst %.c,%.o,$(notdir $(TARGETSRCS:.cpp=.o))))
-OBJS = $(patsubst %.c,%.o,$(TARGETSRCS:.cpp=.o))
+LINKFLAGS = $(TARGETLIBS) -lpthread -lrt -lnsl -lgcc_s
+TARGETSRCS = $(wildcard *.c *.cpp)
+OBJS = $(addprefix $(OBJECTPATH)/, $(patsubst %.c,%.o,$(TARGETSRCS:.cpp=.o)))
 
 ifeq ($(strip $(TARGETPATH)),)
     TARGETPATH := .
@@ -54,5 +51,5 @@ endif
 all debug release: $(TARGETNAME)
 
 clean:
-	rm -f $(OBJECTPATH)/*.o $(TARGETPATH)/$(TARGETNAME) $(TARGETPATH)/core* rm -f *.o  ../majiang/*.o ../wrbuyu/*.o ../ddz/*.o
-
+	rm -f $(OBJECTPATH)/*.o $(TARGETPATH)/$(TARGETNAME) $(TARGETPATH)/core*
+	
