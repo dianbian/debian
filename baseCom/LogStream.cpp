@@ -66,10 +66,12 @@ size_t convertHex(char buf[], uintptr_t value)
   
   return p - buf;
 }
-
 template class FixedBuffer<kSmallBuffer>;
 template class FixedBuffer<kLargeBuffer>;
+
 }
+
+using namespace detail;
 
 template<int SIZE>
 const char* FixedBuffer<SIZE>::debugString()
@@ -85,7 +87,7 @@ void FixedBuffer<SIZE>::cookieStart()
 }
 
 template<int SIZE>
-void FixedBuffer<SIZE>:cookieEnd()
+void FixedBuffer<SIZE>::cookieEnd()
 {
   
 }
@@ -108,52 +110,52 @@ void LogStream::formatInteger(T v)
   }
 }
 
-LogStream LogStream::operator<<(short v)
+LogStream& LogStream::operator<<(short v)
 {
   *this << static_cast<int>(v);
   return *this;
 }
 
-LogStream LogStream::operator<<(unsigned short v)
+LogStream& LogStream::operator<<(unsigned short v)
 {
   *this << static_cast<unsigned int>(v);
   return *this;
 }
 
-LogStream LogStream::operator<<(int v)
+LogStream& LogStream::operator<<(int v)
 {
   formatInteger(v);
   return *this;
 }
 
-LogStream LogStream::operator<<(unsigned int v)
-{
-  formatInteger(v)
-  return *this;
-}
-
-LogStream LogStream::operator<<(long v)
+LogStream& LogStream::operator<<(unsigned int v)
 {
   formatInteger(v);
   return *this;
 }
 
-LogStream LogStream::operator<<(unsigned long v)
+LogStream& LogStream::operator<<(long v)
 {
   formatInteger(v);
   return *this;
 }
 
-LogStream LogStream::operator<<(long long v)
+LogStream& LogStream::operator<<(unsigned long v)
 {
   formatInteger(v);
   return *this;
 }
 
-LogStream LogStream::operator<<(const void* p)
+LogStream& LogStream::operator<<(long long v)
+{
+  formatInteger(v);
+  return *this;
+}
+
+LogStream& LogStream::operator<<(const void* p)
 {
   uintptr_t v = reinterpret_cast<uintptr_t>(p);
-  if (buffer_.avail() >= kMaxNumericsize)
+  if (buffer_.avail() >= kMaxNumericSize)
   {
     char* buf = buffer_.current();
     buf[0] = '0';
@@ -165,11 +167,11 @@ LogStream LogStream::operator<<(const void* p)
 }
 
 //FIXME replace this with Grisu3 by Florian Loitsch.
-LogStream LogStream::operator<<(double v)
+LogStream& LogStream::operator<<(double v)
 {
-  if (buffer_.avail() >= kMaxNumericsize)
+  if (buffer_.avail() >= kMaxNumericSize)
   {
-    int len = snprintf(buffer_.current(), kMaxNumericsize, "%.12g", v);
+    int len = snprintf(buffer_.current(), kMaxNumericSize, "%.12g", v);
     buffer_.add(len);
   }
   return *this;

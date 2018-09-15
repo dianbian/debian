@@ -2,6 +2,7 @@
 #ifndef BASECOM_TYPES_H
 #define BASECOM_TYPES_H
 
+#include <stdio.h>
 #include <stdint.h>
 #ifndef NDEBUG
 #include <assert.h>

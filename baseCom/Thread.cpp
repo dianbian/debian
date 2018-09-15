@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/prctl.h>
+#include <sys/syscall.h>
 #include <sys/types.h>
 #include <linux/unistd.h>
 
@@ -73,7 +74,7 @@ struct ThreadData
 		latch_ = NULL;
 		
 		CurrentThread::t_threadName = name_.empty() ? "mdThread" : name_.c_str();
-		::prctl(PR_SET_NAEM, CurrentThread::t_threadName);
+		::prctl(PR_SET_NAME, CurrentThread::t_threadName);
 		try
 		{
 			func_();

@@ -6,6 +6,7 @@
 #include <netdb.h>
 #include <string.h>
 #include <netinet/in.h>
+#include <stddef.h>
 
 // INADDR_ANY use (type) value casting.
 #pragma GCC diagnostic ignored "-Wold-style-cast"
@@ -40,8 +41,8 @@ static const in_addr_t kInaddrLoopback = INADDR_LOOPBACK;
 
 InetAddress::InetAddress(uint16_t port, bool loopbackOnly, bool ipv6)
 {
-	assert(offsetof(InetAddress, addr6_) == 0);
-	assert(offsetof(InetAddress, addr_) == 0);
+	static_assert(offsetof(InetAddress, addr6_) == 0, "ipv6");
+	static_assert(offsetof(InetAddress, addr_) == 0, "ipv4");
 	if (ipv6)
 	{
 		bzero(&addr6_, sizeof addr6_);
@@ -84,7 +85,7 @@ std::string InetAddress::toIpPort() const
 std::string InetAddress::toIp() const 
 {
 	char buf[64] = "";
-	netsocket::toIp(buf, sizeof buf, getSockAddr());
+	netsockets::toIp(buf, sizeof buf, getSockAddr());
 	return buf;
 }
 
@@ -112,7 +113,7 @@ bool InetAddress::resolve(StringArg hostname, InetAddress* out)
 	int ret = gethostbyname_r(hostname.c_str(), &hent, t_resolveBuffer, sizeof t_resolveBuffer, &he, &herrno);
 	if (ret == 0 && he != NULL)
 	{
-		assert(he->h_addrtype == AF_INET && he->length == sizeof(uint32_t));
+		assert(he->h_addrtype == AF_INET && he->h_length == sizeof(uint32_t));
 		out->addr_.sin_addr = *reinterpret_cast<struct in_addr*>(he->h_addr);
 		return true;
 	}
@@ -120,7 +121,7 @@ bool InetAddress::resolve(StringArg hostname, InetAddress* out)
 	{
 		if (ret)
 		{
-			LOG_SYSERR << _FUNCTION_;
+			LOG_SYSERR << "InetAddress::resolve";
 		}
 		return false;
 	}

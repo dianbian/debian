@@ -53,11 +53,6 @@ public:
 	void queueInLoop(const Functor& cb);
 	size_t queueSize() const;
 
-#ifdef __GXX_EXPERIMENTAL_CXX0X__
-  void runInLoop(Functor&& cb);
-	void queueInLoop(Functor&& cb);
-#endif
-    
 	//Timers
 	//Runs callback at 'time'.
 	//Safe to call from other threads.

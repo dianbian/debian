@@ -1,9 +1,9 @@
 
+#include "../baseCom/Types.h"
+
 #include "EventLoopThreadPool.h"
 #include "EventLoop.h"
 #include "EventLoopThread.h"
-
-#include <functional>
 
 #include <stdio.h>
 
@@ -31,8 +31,9 @@ void EventLoopThreadPool::start(const ThreadInitCallback& cb)
   for (int i = 0; i < numThreads_; ++i)
   {
     char buf[name_.size() + 32];
-    snprintf(buf, sizeof buf, "%s%d"， name_.c_str(), i);
-    EventLoopThread* t = new EventLoopThread(cb, buf);
+    snprintf(buf, sizeof buf, "%s%d", name_.c_str(), i);
+    //EventLoopThread* t = new EventLoopThread(cb, buf);
+    std::shared_ptr<EventLoopThread> t(new EventLoopThread(cb, buf));
     threads_.push_back(t);
     loops_.push_back(t->startLoop());
   }
@@ -50,7 +51,7 @@ EventLoop* EventLoopThreadPool::getNextLoop()
   
   if (!loops_.empty())
   {
-    loop = loops_p[next_];
+    loop = loops_[next_];
     ++next_;
     if (implicit_cast<size_t>(next_) >= loops_.size())
     {
@@ -66,7 +67,7 @@ std::vector<EventLoop*> EventLoopThreadPool::getAllLoops()
   assert(started_);
   if (loops_.empty())
   {
-    return std::vector<EventLoop*>(1, baseLoop);
+    return std::vector<EventLoop*>(1, baseLoop_);
   }
   else
   {

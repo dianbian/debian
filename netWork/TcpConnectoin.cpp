@@ -19,9 +19,9 @@ using namespace std;
 
 void defaultConnectionCallback(const TcpConnectoinPtr& conn)
 {
-  LOG_TRACE << conn->localAddress().toIpPort() << " -> "
-            << conn->peerAddress().toInPort() << " is "
-            << (conn->connected() ? "UP" : "DOWN");
+  //LOG_TRACE << conn->localAddress().toIpPort() << " -> "
+  //          << conn->peerAddress().toInPort() << " is "
+  //          << (conn->connected() ? "UP" : "DOWN");
   //do not call nonn->forceClose()
 }
 
@@ -42,7 +42,7 @@ TcpConnectoin::TcpConnectoin(EventLoop* loop,
                             socket_(new Socket(sockfd)),
                             channel_(new Channel(loop, sockfd)),
                             localAddr_(localAddr),
-                            peerAddress_(peerAddress),
+                            peerAddr_(peerAddress),
                             highWaterMark_(64 * 1024 * 1024)
 {
   channel_->setReadCallback(std::bind(&TcpConnectoin::handleRead, this, std::placeholders::_1));
@@ -88,7 +88,8 @@ void TcpConnectoin::send(const StringPiece& message)
     }
     else
     {
-      loop_->runInLoop(std::bind(&TcpConnectoin::sendInLoop, this, message.as_string()));
+      //loop_->runInLoop(std::bind(&TcpConnectoin::sendInLoop, this, message.as_string()));
+      loop_->runInLoop(std::bind(static_cast<void (TcpConnectoin::*)(const StringPiece&)>(&TcpConnectoin::sendInLoop), this, message));
     }
   }
 }
@@ -104,7 +105,9 @@ void TcpConnectoin::send(Buffer* buf)
     }
     else
     {
-      loop_->runInLoop(std::bind(&TcpConnectoin::sendInLoop, this, buf->retrieveAllAsString()));
+      //loop_->runInLoop(std::bind(&TcpConnectoin::sendInLoop, this, buf->retrieveAllAsString()));
+      string msg = buf->retrieveAllAsString();
+      //loop_->runInLoop(std::bind(static_cast<void (TcpConnectoin::*)(const string&)>(&TcpConnectoin::sendInLoop), this, msg));
     }
   }
 }
@@ -189,7 +192,7 @@ void TcpConnectoin::forceClose()
   if (state_ == kConnected || state_ == kDisconnecting)
   {
     setState(kDisconnecting);
-    loop_->queueInLoop(std::bind(&TcpConnectoin::forceCloseInLoop, shared_from_this()));
+    //loop_->queueInLoop(std::bind(&TcpConnectoin::forceCloseInLoop, shared_from_this()));
   }
 }
 
@@ -198,7 +201,7 @@ void TcpConnectoin::forceCloseWithDelay(double seconds)
   if (state_ == kConnected || state_ == kDisconnecting)
   {
     setState(kDisconnecting);
-    loop_->runAfter(seconds, makeWeakCallback(shared_from_this(), &TcpConnectoin::forceClose));
+    //loop_->runAfter(seconds, makeWeakCallback(shared_from_this(), &TcpConnectoin::forceClose));
     //not forceCloseInLoop to avoid race condition
   }
 }
@@ -236,7 +239,7 @@ void TcpConnectoin::setTcpNoDelay(bool on)
 
 void TcpConnectoin::startRead()
 {
-  loop_->runInLoop(std::bind(&TcpConnectoin::startReadInLoop, this));
+  //loop_->runInLoop(std::bind(&TcpConnectoin::startReadInLoop, this));
 }
 
 void TcpConnectoin::startReadInLoop()
@@ -251,7 +254,7 @@ void TcpConnectoin::startReadInLoop()
 
 void TcpConnectoin::stopRead()
 {
-  loop_->runInLoop(std::bind(&TcpConnectoin::stopReadInLoop, this));
+  //loop_->runInLoop(std::bind(&TcpConnectoin::stopReadInLoop, this));
 }
 
 void TcpConnectoin::stopReadInLoop()
@@ -323,7 +326,7 @@ void TcpConnectoin::handleWrite()
         channel_->disableWriting();
         if (writeCompleteCallback_)
         {
-          loop_->queueInLoop(std::bind(writeCompleteCallback_, shared_from_this()));
+          //loop_->queueInLoop(std::bind(writeCompleteCallback_, shared_from_this()));
         }
         if (state_ == kDisconnecting)
         {

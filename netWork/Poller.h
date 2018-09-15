@@ -18,31 +18,31 @@ class Poller : public noncopyable
  public:
   typedef std::vector<Channel*> ChannelList;
 	
-	Poller(EventLoop* loop);
-	virtual ~Poller();
+  Poller(EventLoop* loop);
+  virtual ~Poller();
 	
-	//polls the I/O events.
-	//Must be called in the loop thread.
-	virtual Timestamp poll(int timeoutMs, ChannelList* activeChanels) = 0;
-	//Changes the interested I/O events.
-	//Must be called in the loop thread.
-	virtual void updateChannel(Channel* channel) = 0;
-	//Remove the channel, when it destructs.
-	//Must be called in the loop thread.
-	virtual bool removeChannel(Channel* channel) = 0;
+  //polls the I/O events.
+  //Must be called in the loop thread.
+  virtual Timestamp poll(int timeoutMs, ChannelList* activeChanels) = 0;
+  //Changes the interested I/O events.
+  //Must be called in the loop thread.
+  virtual void updateChannel(Channel* channel) = 0;
+  //Remove the channel, when it destructs.
+  //Must be called in the loop thread.
+  virtual void removeChannel(Channel* channel) = 0;
 	
-	virtual bool hasChannel(Channel* channel) const;
+  virtual bool hasChannel(Channel* channel) const;
+
+  static Poller* newDefaultPoller(EventLoop* loop);
 	
-	static Poller* newDefaultPoller(EventLoop* loop);
-	
-	void asserInLoopThread() const
-	{
-		ownerLoop_->assertInLoopThread();
-	}
+  void assertInLoopThread() const
+  {
+     ownerLoop_->assertInLoopThread();
+  }
 	
  protected:
   typedef std::map<int, Channel*> ChannelMap;
-	ChannelMap channels_;
+  ChannelMap channels_;
 	
  private:
   EventLoop* ownerLoop_;

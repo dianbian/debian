@@ -17,15 +17,15 @@ class InetAddress : public copyable
 {
  public:
   //constructs an endpoint with given port number.
- 	//Mostly used in TcpSever listening.
-	explicit InetAddress(uint16_t port = 0, bool loopbackOnly = false, bool ipv6 = false);
+  //Mostly used in TcpSever listening.
+  explicit InetAddress(uint16_t port = 0, bool loopbackOnly = false, bool ipv6 = false);
 		
-	//constructs an endpoint whit given ip and port
-	//ip shoule be "1.2.3.4"
+  //constructs an endpoint whit given ip and port
+  //ip shoule be "1.2.3.4"
   InetAddress(StringArg ip, uint16_t port, bool ipv6 = false);
 		
-	//constructs an endpoint with given struct &c sockaddr_in.
-	//Mostly used when accepting new connections
+  //constructs an endpoint with given struct &c sockaddr_in.
+  //Mostly used when accepting new connections
 	explicit InetAddress(const struct sockaddr_in& addr) : addr_(addr)
   { }
 		
@@ -43,12 +43,12 @@ class InetAddress : public copyable
 	const struct sockaddr* getSockAddr() const { return netsockets::sockaddr_cast(&addr6_); }
 	void setSockAddrInet6(const struct sockaddr_in6& addr6) { addr6_ = addr6; }
 		
-	uint32_t inNetEndian() const;
+	uint32_t ipNetEndian() const;
 	uint16_t portNetEndian() const { return addr_.sin_port; }
 		
 	//reslove hostname to IP address, not changing port or sin_family.
 	//return true on success, thread safe.
-	static bool reslove(StringArg hostname, InetAddress* result);
+	static bool resolve(StringArg hostname, InetAddress* result);
 		
  private:
 	union

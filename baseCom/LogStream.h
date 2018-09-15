@@ -12,7 +12,7 @@
 
 namespace detail
 {
-const int kSamllBuffer = 4000;
+const int kSmallBuffer = 4000;
 const int kLargeBuffer = 4000 * 1000;
 
 template<int SIZE>
@@ -49,7 +49,7 @@ class FixedBuffer : public noncopyable
   void reset() { cur_ = data_; }
   void bzero() { ::bzero(data_, sizeof data_); }
   //for used by GDB
-  const char* debugstring();
+  const char* debugString();
   void setCookie(void (*cookie)()) { cookie_ = cookie; }
   //for used by unit test
   std::string toString() const { std::string(data_, length()); }
@@ -72,7 +72,7 @@ class LogStream : public noncopyable
 {
   typedef LogStream self;
  public:
-  typedef detail::FixedBuffer<detail::kSamllBuffer> Buffer;
+  typedef detail::FixedBuffer<detail::kSmallBuffer> Buffer;
   
   self& operator<<(bool v)
   {

@@ -18,7 +18,7 @@ class Logger
     WARN,
     ERROR,
     FATAL,
-    NUM_LOG_LEVELS,
+    NUM_LOG_LEVELS
   };
 
   //compile time calculation of basename of source file
@@ -108,7 +108,7 @@ inline Logger::LogLevel Logger::logLevel()
 const char* strerror_tl(int savedErrno);
 
 #define CHECK_NOTNULL(val) \
-        CheckNotNULL(__FILE__, __LINE__, "'" #val "' Must be non NULL", (val));
+        CheckNotNULL(__FILE__, __LINE__, "'" #val "' Must be non NULL", (val))
         
 template <typename T>
 T* CheckNotNULL(Logger::SourceFile file, int line, const char* names, T* ptr)

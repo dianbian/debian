@@ -21,7 +21,7 @@ namespace ProcessInfo
   bool isDebugBuild();  //constexpr
   
   string hostname();
-  string proname();
+  string procname();
   StringPiece procname(const string& stat);
   
   //read /proc/self/status

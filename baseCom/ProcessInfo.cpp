@@ -119,7 +119,7 @@ string ProcessInfo::procname()
   return procname(procStat()).as_string();
 }
 
-StringPiece ProcessInfo::proname(const string& stat)
+StringPiece ProcessInfo::procname(const string& stat)
 {
   StringPiece name;
   size_t lp = stat.find('(');

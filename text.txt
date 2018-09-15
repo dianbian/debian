@@ -9,3 +9,15 @@ how to connect wifi ?   yum -y install NetworkManager-wifi (censtos 7);
 
 how to connect Enther   vi /etc/sysconfig/network-scripts
                         vi /etc/resolv.conf;
+
+                        
+                        
+compiler
+g++ -g ../../../baseCom/*.cpp ../../../netWork/*.cpp echo.cpp main.cpp -std=c++11 -pthread -D__STDC_FORMAT_MACROS
+
+
+ptr_vector
+https://blog.csdn.net/qq_17308321/article/details/81558253
+
+
+https://www.2cto.com/kf/201512/454263.html

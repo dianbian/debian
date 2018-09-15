@@ -2,10 +2,11 @@
 #ifndef NETWORK_EVENTLOOPTHREADPOOL_H
 #define NETWORK_EVENTLOOPTHREADPOOL_H
 
-#include "../../baseCom/noncopyable.h"
+#include "../baseCom/noncopyable.h"
 
 #include <vector>
 #include <functional>
+#include <memory>
 
 class EventLoop;
 class EventLoopThread;
@@ -38,7 +39,7 @@ class EventLoopThreadPool : public noncopyable
   bool started_;
   int numThreads_;
   int next_;
-  std::shared_ptr<EventLoopThread> threads_:
+  std::vector<std::shared_ptr<EventLoopThread> > threads_;
   std::vector<EventLoop*> loops_;
 };
 

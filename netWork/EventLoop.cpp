@@ -4,7 +4,8 @@
 
 #include "EventLoop.h"
 #include "Channel.h"
-#include "Poller.h"
+//#include "Poller.h"
+#include "poller/EPollPoller.h"
 #include "SocketsOps.h"
 #include "TimerQueue.h"
 
@@ -50,18 +51,20 @@ EventLoop* EventLoop::getEventLoopOfCurrentThread()
 }
 
 EventLoop::EventLoop() : 
-          looping_(false), 
-					quit_(false),
-					eventHandling_(false),
-					callingPendingFunctors_(false),
-					iteration_(0),
-					threadId_(Poller::newDefaultPoller(this)),
-					timerQueue_(new TimerQueue(this)),
-					wakeupFd_(createEventfd()),
-					wakeupChannel_(new Channel(this, wakeupFd_)),
-					currentActiveChannel_(NULL)
+        looping_(false), 
+	quit_(false),
+	eventHandling_(false),
+	callingPendingFunctors_(false),
+	iteration_(0),
+	threadId_(CurrentThread::tid()),
+     	//threadId_(new EPollPoller(this)),
+     	poller_(new EPollPoller(this)),
+        timerQueue_(new TimerQueue(this)),
+	wakeupFd_(createEventfd()),
+	wakeupChannel_(new Channel(this, wakeupFd_)),
+	currentActiveChannel_(NULL)
 {
-	LOG_DEBUG << "EventLoop created " << this << 	" in thread " << threadId_；
+	LOG_DEBUG << "EventLoop created " << this << 	" in thread " << threadId_;
 	if (t_loopInThisThread)
 	{
 		LOG_FATAL << "Another EventLoop " << t_loopInThisThread << " exists int this thread " << threadId_;
@@ -90,7 +93,7 @@ EventLoop::~EventLoop()
 		++iteration_;
 		if (Logger::logLevel() <= Logger::TRACE)
 		{
-			printActionChannels();
+			printActiveChannels();
 		}
 		//todo sort channal by priority, may later to do.
 		eventHandling_ = true;
@@ -104,7 +107,7 @@ EventLoop::~EventLoop()
 		doPendingFunctors();
 	}
 	LOG_TRACE << "EventLoop " << this << " stop looping";
-	looping_ false;
+	looping_ = false;
 }
 
 void EventLoop::quit()
@@ -121,7 +124,7 @@ void EventLoop::runInLoop(const Functor& cb)
 {
 	if (isInLoopThread())
 	{
-		cb()
+		cb();
 	}
 	else
 	{
@@ -136,7 +139,7 @@ void EventLoop::queueInLoop(const Functor& cb)
 		pendingFunctors_.push_back(cb);
 	}
 	
-	if (isInLoopThread() || callingPengingFunctors_)
+	if (isInLoopThread() || callingPendingFunctors_)
 	{
 		wakeup();
 	}
@@ -161,16 +164,16 @@ TimerId EventLoop::runAfter(double delay, const TimerCallback& cb)
 
 TimerId EventLoop::runEvery(double interval, const TimerCallback& cb)
 {
-  Timestamp time(Timestamp::now(), interval);
+  Timestamp time(addTime(Timestamp::now(), interval));
   return timerQueue_->addTimer(cb, time, interval);
 }
-
+/*
 #ifdef __GXX_EXPERIMENTAL_CXX0X__
 void EventLoop::runInLoop(Functor&& cb)
 {
 	if (isInLoopThread())
 	{
-		cb()
+		cb();
 	}
 	else
 	{
@@ -185,7 +188,7 @@ void EventLoop::queueInLoop(Functor&& cb)
 		pendingFunctors_.push_back(std::move(cb));
 	}
 	
-	if (isInLoopThread() || callingPengingFunctors_)
+	if (isInLoopThread() || callingPendingFunctors_)
 	{
 		wakeup();
 	}
@@ -204,11 +207,11 @@ TimerId EventLoop::runAfter(double delay, TimerCallback&& cb)
 
 TimerId EventLoop::runEvery(double interval, TimerCallback&& cb)
 {
-  Timestamp time(Timestamp::now(), interval));
+  Timestamp time(addTime(Timestamp::now(), interval));
   return timerQueue_->addTimer(std::move(cb), time, interval);
 }
 #endif
-
+*/
 void EventLoop::cancel(TimerId timerId)
 {
   return timerQueue_->cancel(timerId);
@@ -221,14 +224,14 @@ void EventLoop::updateChannel(Channel* channel)
   if (eventHandling_)
   {
     assert(currentActiveChannel_ == channel || 
-      std::find(activeChannels_.begin(), activeChannels_.end(), channel) == activeChannels_.end())
+      std::find(activeChannels_.begin(), activeChannels_.end(), channel) == activeChannels_.end());
   }
   poller_->removeChannel(channel);
 }
 
-bool EventLoop::hasChannel(channel* channel)
+bool EventLoop::hasChannel(Channel* channel)
 {
-  assert(channel->onwerLoop() == this);
+  assert(channel->ownerLoop() == this);
   assertInLoopThread();
   return poller_->hasChannel(channel);
 }
@@ -237,7 +240,7 @@ void EventLoop::abortNotInLoopThread()
 {
   LOG_FATAL << "EventLoop::abortNotInLoopThread - EventLoop " << this
             << " was created in threadId_ = " << threadId_
-            << ", current thread id = " << CurrentThead::tid();
+            << ", current thread id = " << CurrentThread::tid();
 }
 
 void EventLoop::wakeup()
@@ -253,7 +256,7 @@ void EventLoop::wakeup()
 void EventLoop::doPendingFunctors()
 {
   std::vector<Functor> functors;
-  callingPengingFunctors_ = true;
+  callingPendingFunctors_ = true;
   
   {
     MutexLockGuard lock(mutex_);
@@ -264,14 +267,14 @@ void EventLoop::doPendingFunctors()
   {
     functors[i]();
   }
-  callingPengingFunctors_ = false;
+  callingPendingFunctors_ = false;
 }
 
-void EventLoop::printActionChannels() const
+void EventLoop::printActiveChannels() const
 {
-  for (auto it = activeChannels_.rbegin(); it != activeChannels_.end(); ++it)
+  for (auto it = activeChannels_.begin(); it != activeChannels_.end(); ++it)
   {
-    const channel* ch = *it;
+    const Channel* ch = *it;
     LOG_TRACE << "{" << ch->reventsToString() << "}";
   }
 }

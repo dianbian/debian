@@ -82,7 +82,7 @@ void Channel::handleEventWithGuard(Timestamp receiveTime)
 	}
 	if (revents_ & POLLNVAL)  //fd description is not opening
 	{
-		LOG_WARN << "fd = " << fd << " Channel::handleEvent() POLLNVAL";
+		LOG_WARN << "fd = " << fd_ << " Channel::handleEvent() POLLNVAL";
 	}
 	if (revents_ & (POLLERR | POLLNVAL))  //error | invalid
 	{
@@ -104,15 +104,15 @@ void Channel::handleEventWithGuard(Timestamp receiveTime)
 
 std::string Channel::reventsToString() const
 {
-	return evensToString(fd, revents_);
+	return eventsToString(fd_, revents_);
 }
 
-std::string Channel::evensToString() const
+std::string Channel::eventsToString() const
 {
-	return evensToString(fd, events_);
+	return eventsToString(fd_, events_);
 }
 
-std::string Channel::evensToString(int fd, int ev)
+std::string Channel::eventsToString(int fd, int ev)
 {
 	std::ostringstream oss;
 	oss << fd << ": ";

@@ -59,8 +59,8 @@ void Connector::stopInLoop()
 
 void Connector::connect()
 {
-  int sockfd = netsockets::createNoblockingOrDie(serverAddr_.family());
-  int ret = netsockets::connect(sockfd, serverAddr_.getsockAddr());
+  int sockfd = netsockets::createNonblockingOrDie(serverAddr_.family());
+  int ret = netsockets::connect(sockfd, serverAddr_.getSockAddr());
   int savedErrno = (ret == 0) ? 0 : errno;
   switch (savedErrno)
   {
@@ -72,7 +72,7 @@ void Connector::connect()
       break;
     case EAGAIN:
     case EADDRINUSE:
-    case ECONNREFAUSED:
+    case ECONNREFUSED:
     case ENETUNREACH:
       retry(sockfd);
       break;

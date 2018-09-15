@@ -14,6 +14,8 @@
 #include <strings.h>
 #include <assert.h>
 
+using namespace std;   //for logic_error
+
 namespace detail
 {
 
@@ -303,7 +305,7 @@ struct tm TimeZone::toUtcTime(time_t secondsSinceEpoch, bool yday)
   detail::fillHMS(seconds, &utc);
   Date date(days + Date::kJulianDayOf1970_01_01);
   Date::YearMonthDay ymd = date.yearMonthDay();
-  utc.tm_yead = ymd.year - 1900;
+  utc.tm_year = ymd.year - 1900;
   utc.tm_mon = ymd.month - 1;
-  utc.tm_day = ymd.day;
+  utc.tm_mday = ymd.day;
 }

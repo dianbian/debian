@@ -82,7 +82,7 @@ int ReadSmallFile::readToString(int maxSize, String* content,
   int err = err_;
   if (fd_ >= 0)
   {
-    content.clear();
+    content->clear();
     if (fileSize)
     {
       struct stat statbuf;

@@ -30,17 +30,17 @@ class Socket;
 //This is an interface class, so do not expose too much details.
 class TcpConnectoin : public noncopyable, public std::enable_shared_from_this<TcpConnectoin>
 {
-	//constructs a TcpConnectoin with a connected sockfd
-	//user should not create this object. (don‘t new)
-	TcpConnectoin(EventLoop* loop, const std::string& name, int sockfd, 
-	            const InetAddress& localAddr, const InetAddress& peerAddr);
+  //constructs a TcpConnectoin with a connected sockfd
+  //user should not create this object. (don‘t new)
+  TcpConnectoin(EventLoop* loop, const std::string& name, int sockfd, 
+      const InetAddress& localAddr, const InetAddress& peerAddr);
 				
-	~TcpConnectoin();
+  ~TcpConnectoin();
   
   EventLoop* getLoop() const { return loop_; }
   const std::string& name() const { return name_; }
-  const InetAddress& localAddress() const { return localAddress_; }
-  const InetAddress& peerAddress() const { return peerAddress_; }
+  const InetAddress& localAddress() const { return localAddr_; }
+  const InetAddress& peerAddress() const { return peerAddr_; }
   bool connected() const { return state_ == kConnected; }
   bool disconnected() const { return state_ == kDisconnected; }
   bool getTcpInfo(struct tcp_info*) const; //return true if success.
@@ -101,8 +101,8 @@ class TcpConnectoin : public noncopyable, public std::enable_shared_from_this<Tc
   //don't expose thos classes to client.
   std::unique_ptr<Socket> socket_;
   std::unique_ptr<Channel> channel_;
-  const InetAddress localAddress_;
-  const InetAddress peerAddress_;
+  const InetAddress localAddr_;
+  const InetAddress peerAddr_;
   ConnectionCallback connectionCallback_;
   MessageCallback messageCallback_;
   WriteCompleteCallback writeCompleteCallback_;
