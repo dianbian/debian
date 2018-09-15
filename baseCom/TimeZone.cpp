@@ -308,4 +308,27 @@ struct tm TimeZone::toUtcTime(time_t secondsSinceEpoch, bool yday)
   utc.tm_year = ymd.year - 1900;
   utc.tm_mon = ymd.month - 1;
   utc.tm_mday = ymd.day;
+	utc.tm_wday = date.weekDay();
+
+	if (yday)
+	{
+		Date startOfYear(ymd.year, 1, 1);
+		utc.tm_yday = date.julianDayNumber();
+	}
+	return utc;
+}
+
+time_t TimeZone::fromUtcTime(const struct tm& utc)
+{
+	return fromUtcTime(utc.tm_year + 1900, utc.tm_mon + 1,
+			utc.tm_mday, utc.tm_hour, utc.tm_min, utc.tm_sec);
+}
+
+time_t TimeZone::fromUtcTime(int year, int month, int day,
+		int hour, int minute, int seconds)
+{
+	Date date(year, month, day);
+	int secondsInDay = hour * 3600 + minute * 60 + seconds;
+	time_t days = date.julianDayNumber()- Date::kJulianDayOf1970_01_01;
+	return days + kSecondsPerDay + secondsInDay;
 }

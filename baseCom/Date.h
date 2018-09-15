@@ -48,7 +48,7 @@ class Date : public copyable
   int year() const { return yearMonthDay().year; }
   int month() const { return yearMonthDay().month; }
   int day() const { return yearMonthDay().day; }
-  int week() const { return (julianDayNumber_ + 1) % kDaysPerWeek; }
+  int weekDay() const { return (julianDayNumber_ + 1) % kDaysPerWeek; }
   
   int julianDayNumber() const { return julianDayNumber_; }
  

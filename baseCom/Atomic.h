@@ -19,13 +19,13 @@ class AtomicIntegerT : public noncopyable
 	
 	T getAndAdd(T x)
 	{
-                return __sync_val_compare_and_swap(&value_, 0, 0);
+    return __sync_fetch_and_add(&value_, x);
 		//return _atomic_fetch_add(&value_, x, __ATOMIC_SEQ_CST);
 	}
 	
 	T addAndGet(T x)
 	{
-		getAndAdd(x) + x;
+		return getAndAdd(x) + x;
 	}
 	
 	T incrementAndGet()

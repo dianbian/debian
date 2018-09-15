@@ -1,5 +1,5 @@
 /*************************************************************************
-	> File Name: TcpConnectoin.h
+	> File Name: TcpConnection.h
   > Mail: 986573837@qq.com 
 	> Created Time: Sat 14 Jul 2018 10:39:22 AM CST
  ************************************************************************/
@@ -28,14 +28,15 @@ class Socket;
 
 //Tcp connection, for both client and server usage.
 //This is an interface class, so do not expose too much details.
-class TcpConnectoin : public noncopyable, public std::enable_shared_from_this<TcpConnectoin>
+class TcpConnection : public noncopyable, public std::enable_shared_from_this<TcpConnection>
 {
-  //constructs a TcpConnectoin with a connected sockfd
+ public:
+  //constructs a TcpConnection with a connected sockfd
   //user should not create this object. (don‘t new)
-  TcpConnectoin(EventLoop* loop, const std::string& name, int sockfd, 
+  TcpConnection(EventLoop* loop, const std::string& name, int sockfd, 
       const InetAddress& localAddr, const InetAddress& peerAddr);
 				
-  ~TcpConnectoin();
+  ~TcpConnection();
   
   EventLoop* getLoop() const { return loop_; }
   const std::string& name() const { return name_; }
@@ -114,6 +115,6 @@ class TcpConnectoin : public noncopyable, public std::enable_shared_from_this<Tc
   any context_;
 };
 
-typedef std::shared_ptr<TcpConnectoin> TcpConnectoinPtr;
+typedef std::shared_ptr<TcpConnection> TcpConnectionPtr;
 
 #endif //NETWORK_TCPCONNECTION_H

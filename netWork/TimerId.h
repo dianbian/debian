@@ -28,7 +28,7 @@ class TimerId : public copyable
 	
 	//default copy-actor, dtor(destructor) and assignmeng are ok
 	
-	friend class TimerQuene;
+	friend class TimerQueue;
 	
  private:
   Timer* timer_;

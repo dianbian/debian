@@ -164,13 +164,13 @@ void TimerQueue::handleRead()
 	reset(expired, now);
 }
 
-std::vector<Entry> TimerQueue::getExpired(Timestamp now)
+std::vector<TimerQueue::Entry> TimerQueue::getExpired(Timestamp now)
 {
 	assert(timers_.size() == activeTimers_.size());
 	std::vector<Entry> expired;
-	Entry sentry(now, reinterpret_cast<Timer*>(UINPTR_MAX)); //compare time point
-	auto end = timers_lower_bound(sentry);                  //return little than senty
-	assert(end == timers_end() || now < end->first);
+	Entry sentry(now, reinterpret_cast<Timer*>(UINTPTR_MAX)); //compare time point
+	auto end = timers_.lower_bound(sentry);                  //return little than senty
+	assert(end == timers_.end() || now < end->first);
 	std::copy(timers_.begin(), end, std::back_inserter(expired));
 	timers_.erase(timers_.begin(), end);
 

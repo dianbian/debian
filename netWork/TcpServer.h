@@ -4,7 +4,7 @@
 #include "../baseCom/Atomic.h"
 #include "../baseCom/noncopyable.h"
 
-#include "TcpConnectoin.h"
+#include "TcpConnection.h"
 
 #include <map>
 #include <functional>
@@ -63,11 +63,11 @@ class TcpServer : public noncopyable
 	//not thread safe, but in loop.
 	void newConnection(int sockfd, const InetAddress& peerAddr);
 	//thread safe.
-	void removeConnection(const TcpConnectoinPtr& conn);
+	void removeConnection(const TcpConnectionPtr& conn);
 	//not thread safe, but in loop.
-	void removeConnectionInLoop(const TcpConnectoinPtr& conn);
+	void removeConnectionInLoop(const TcpConnectionPtr& conn);
 
-	typedef std::map<std::string, TcpConnectoinPtr> ConnectionMap;
+	typedef std::map<std::string, TcpConnectionPtr> ConnectionMap;
 
 	EventLoop* loop_;  //this is the acceptor loop
 	const std::string ipPort_;

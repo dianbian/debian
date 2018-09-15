@@ -53,6 +53,7 @@ std::string Date::toIsoString() const
   char buf[32];
   YearMonthDay ymd(yearMonthDay());
   snprintf(buf, sizeof buf, "%4d-%02d-%02d", ymd.year, ymd.month, ymd.day);
+  return buf;
 }
 
 Date::YearMonthDay Date::yearMonthDay() const

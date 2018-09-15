@@ -24,7 +24,7 @@ class Acceptor : public noncopyable
 	 void setNewConnectionCallback(const NewConnetionCallback& cb)
 	 { newConnectionCallback_ = cb; }
 
-	 bool listening() const { return listening_; }
+	 bool listenning() const { return listenning_; }
 	 void listen();
 
  private:
@@ -34,7 +34,7 @@ class Acceptor : public noncopyable
 	 Socket acceptSocket_;
 	 Channel acceptChannel_;
 	 NewConnetionCallback newConnectionCallback_;
-	 bool listening_;
+	 bool listenning_;
 	 int idleFd_;
 };
 

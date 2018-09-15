@@ -52,7 +52,7 @@ class FixedBuffer : public noncopyable
   const char* debugString();
   void setCookie(void (*cookie)()) { cookie_ = cookie; }
   //for used by unit test
-  std::string toString() const { std::string(data_, length()); }
+  std::string toString() const { return std::string(data_, length()); }
   StringPiece toStringPiece() const { return StringPiece(data_, length()); }
   
  private:
@@ -124,6 +124,7 @@ class LogStream : public noncopyable
   self& operator<<(const StringPiece& v)
   {
     buffer_.append(v.data(), v.size());
+		return *this;
 	}
   self& operator<<(const Buffer& v)
   {
