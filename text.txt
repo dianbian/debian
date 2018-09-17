@@ -15,6 +15,7 @@ how to connect Enther   vi /etc/sysconfig/network-scripts
 compiler
 g++ -g ../../../baseCom/*.cpp ../../../netWork/*.cpp echo.cpp main.cpp -std=c++11 -pthread -D__STDC_FORMAT_MACROS
 
+g++ ../../../baseCom/*.cpp ../../../netWork/*.cpp ../../../netWork/poller/*.cpp echo.cpp main.cpp -std=c++0x -pthread -g -Wall -o main
 
 ptr_vector
 https://blog.csdn.net/qq_17308321/article/details/81558253

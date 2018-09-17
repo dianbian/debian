@@ -19,9 +19,9 @@ using namespace std;
 
 void defaultConnectionCallback(const TcpConnectionPtr& conn)
 {
-  //LOG_TRACE << conn->localAddress().toIpPort() << " -> "
-  //          << conn->peerAddress().toInPort() << " is "
-  //          << (conn->connected() ? "UP" : "DOWN");
+  LOG_TRACE << conn->localAddress().toIpPort() << " -> "
+            << conn->peerAddress().toIpPort() << " is "
+            << (conn->connected() ? "UP" : "DOWN");
   //do not call nonn->forceClose()
 }
 
@@ -298,7 +298,7 @@ void TcpConnection::handleRead(Timestamp receiveTime)
   ssize_t n = inputBuffer_.readFd(channel_->fd(), &savedErrno);
   if (n > 0)
   {
-    //messageCallback_(shared_from_this(), &inputBuffer_, receiveTime);
+    messageCallback_(shared_from_this(), &inputBuffer_, receiveTime);
   }
   else if (n == 0)
   {
@@ -355,7 +355,14 @@ void TcpConnection::handleClose()
   channel_->disableAll();
   
   TcpConnectionPtr guardThis(shared_from_this());
-  //connectionCallback_(guardThis);
+  connectionCallback_(guardThis);
   //must be the last line
-  //closeCallback_(guardThis);
+  closeCallback_(guardThis);
+}
+
+void TcpConnection::handleError()
+{
+	int err = netsockets::getSocketError(channel_->fd());
+	LOG_ERROR << "TcpConnection::handleError [ " << name_
+		        << "] - SO_ERROR = " << err << " " << strerror_tl(err);
 }

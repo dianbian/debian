@@ -50,16 +50,16 @@ EventLoop* EventLoop::getEventLoopOfCurrentThread()
 	return t_loopInThisThread;
 }
 
-EventLoop::EventLoop() : 
-        looping_(false), 
+EventLoop::EventLoop()  
+ :looping_(false), 
 	quit_(false),
 	eventHandling_(false),
 	callingPendingFunctors_(false),
 	iteration_(0),
 	threadId_(CurrentThread::tid()),
-     	//threadId_(new EPollPoller(this)),
-     	poller_(new EPollPoller(this)),
-        timerQueue_(new TimerQueue(this)),
+  //threadId_(new EPollPoller(this)),
+  poller_(new EPollPoller(this)),
+  timerQueue_(new TimerQueue(this)),
 	wakeupFd_(createEventfd()),
 	wakeupChannel_(new Channel(this, wakeupFd_)),
 	currentActiveChannel_(NULL)
@@ -79,6 +79,16 @@ EventLoop::EventLoop() :
 }
 
 EventLoop::~EventLoop()
+{
+	LOG_DEBUG << "EventLoop " << this << " of thread " << threadId_
+		        << " destructs in thread " << CurrentThread::tid();
+	wakeupChannel_->disableAll();
+	wakeupChannel_->remove();
+	::close(wakeupFd_);
+	t_loopInThisThread = NULL;
+}
+
+void EventLoop::loop()
 {
 	assert(!looping_);
 	assertInLoopThread();
@@ -167,7 +177,7 @@ TimerId EventLoop::runEvery(double interval, const TimerCallback& cb)
   Timestamp time(addTime(Timestamp::now(), interval));
   return timerQueue_->addTimer(cb, time, interval);
 }
-/*
+
 #ifdef __GXX_EXPERIMENTAL_CXX0X__
 void EventLoop::runInLoop(Functor&& cb)
 {
@@ -211,7 +221,7 @@ TimerId EventLoop::runEvery(double interval, TimerCallback&& cb)
   return timerQueue_->addTimer(std::move(cb), time, interval);
 }
 #endif
-*/
+
 void EventLoop::cancel(TimerId timerId)
 {
   return timerQueue_->cancel(timerId);
@@ -258,6 +268,16 @@ void EventLoop::wakeup()
   {
     LOG_ERROR << "EventLoop::handleRead() reads " << n << " bytes instead of 8";
   }
+}
+
+void EventLoop::handleRead()
+{
+	uint64_t one = 1;
+	ssize_t n = netsockets::read(wakeupFd_, &one, sizeof one);
+	if (n != sizeof one)
+	{
+		LOG_ERROR << "EventLoop::handleRead() reads " << n << " bytes instead if 8"; 
+	}
 }
 
 void EventLoop::doPendingFunctors()
