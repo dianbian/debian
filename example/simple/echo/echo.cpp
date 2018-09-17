@@ -16,21 +16,23 @@ EchoServer::EchoServer(EventLoop* loop, const InetAddress& listenAddr)
 
 void EchoServer::start()
 {
+	printf("EchoServer::start\n");
 	server_.start();
 }
 
 
 void EchoServer::onConnection(const TcpConnectionPtr& conn)
 {
-	/*LOG_INFO << "EchoServer - " << conn->peerAddress().toIpPort()*<< " ->"
+	LOG_INFO << "EchoServer - " << conn->peerAddress().toIpPort() << " ->"
 		<< conn->localAddress().toIpPort() << " is "
-		<< (conn->connected() ? "UP" : "DOWN")*/
+		<< (conn->connected() ? "UP" : "DOWN");
 }
 
 void EchoServer::onMessage(const TcpConnectionPtr& conn, Buffer* buf, Timestamp time)
 {
   std::string msg(buf->retrieveAllAsString());
-	LOG_INFO << /*conn->name() << " echo " << msg.size() << " bytes, "
-		<< "data received at " << */time.toString();
-	//conn->send(msg);
+	LOG_INFO << conn->name() << " echo " << msg.size() << " bytes, "
+		<< "data received at " << time.toString();
+	printf("收到消息%s\n", msg.c_str());
+	conn->send(msg);
 }

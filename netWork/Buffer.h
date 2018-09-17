@@ -30,7 +30,7 @@ public:
 	explicit Buffer(size_t initialSize = kInitialSize)
 		: buffer_(kCheapPrepend + initialSize), readerIndex_(kCheapPrepend), writerIndex_(kCheapPrepend) {
 			assert(readableBytes() == 0);
-			assert(writableBytes() == 0);
+			assert(writableBytes() == initialSize);
 			assert(prependableBytes() == kCheapPrepend);
 		}
 	//implicit copy-ctor, move-ctor, dtor and assignment are fine

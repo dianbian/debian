@@ -22,3 +22,5 @@ https://blog.csdn.net/qq_17308321/article/details/81558253
 
 
 https://www.2cto.com/kf/201512/454263.html
+
+nc 0.0.0.0 2018

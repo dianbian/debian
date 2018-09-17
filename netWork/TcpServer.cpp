@@ -12,15 +12,16 @@
 #include <stdio.h>
 
 TcpServer::TcpServer(EventLoop* loop, const InetAddress& listenAddr, const std::string& nameArg, Option option) 
-	 : loop_(/*CHECK_NOTNULL(*/loop), 
+	 : loop_(CHECK_NOTNULL(loop)), 
 		 ipPort_(listenAddr.toIpPort()), 
 		 name_(nameArg), 
 		 acceptor_(new Acceptor(loop, listenAddr, option == kReusePort)), 
 		 threadPool_(new EventLoopThreadPool(loop, name_)),
-		 //connectionCallback_(defaultConnectionCallback), 
-		 //messageCallback_(defaultMessageCallback),
+		 connectionCallback_(defaultConnectionCallback), 
+		 messageCallback_(defaultMessageCallback),
 		 nextConnId_(1)
 {
+  printf("TcpServer::TcpServer\n");
   acceptor_->setNewConnectionCallback(std::bind(&TcpServer::newConnection, this, 
 				std::placeholders::_1, std::placeholders::_2));
 }
@@ -34,7 +35,7 @@ TcpServer::~TcpServer()
   {
     TcpConnectionPtr conn(it->second);
     it->second.reset();
-    //conn->getLoop->runInLoop(std::bind(&TcpConnection::connectDestroyed, conn));
+    conn->getLoop()->runInLoop(std::bind(&TcpConnection::connectDestroyed, conn));
   }
 }
 
@@ -46,12 +47,14 @@ void TcpServer::setThreadNum(int numThreads)
 
 void TcpServer::start()
 {
+	printf("TcpServer::start\n");
   if (started_.getAndSet(1) == 0)
   {
     threadPool_->start(threadInitCallback_);
     
     assert(!acceptor_->listenning());
     //loop_->runInLoop(std::bind(&Acceptor::listen, get_pointer(acceptor_)));
+		loop_->runInLoop(std::bind(&Acceptor::listen, acceptor_.get()));
   }
 }
 
@@ -76,6 +79,7 @@ void TcpServer::newConnection(int sockfd, const InetAddress& peerAddr)
   conn->setWriteCompleteCallback(writeCompleteCallback_);
   conn->setCloseCallback(std::bind(&TcpServer::removeConnection, this, std::placeholders::_1));  //unsafe ?
   ioLoop->runInLoop(std::bind(&TcpConnection::connectEstablished, conn));
+	printf("TcpServer::newConnection\n");
 }
 
 void TcpServer::removeConnection(const TcpConnectionPtr& conn)
