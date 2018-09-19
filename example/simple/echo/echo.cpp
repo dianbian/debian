@@ -1,8 +1,8 @@
 
-#include "../../../baseCom/Logging.h"
+#include "Logging.h"
 
-#include "../../../netWork/EventLoop.h"
-#include "../../../netWork/Buffer.h"
+#include "EventLoop.h"
+#include "Buffer.h"
 
 #include "echo.h"
 

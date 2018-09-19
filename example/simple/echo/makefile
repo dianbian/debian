@@ -3,16 +3,16 @@ TARGETPATH := ../bin
 OBJECTPATH := ../obj/$(TARGETNAME)
 # 0 -- Application; 1 -- Static library; 2 -- Dynamic library
 TARGETTYPE = 0
-TARGETINCS = -I../../baseCom -I../../netWork
+TARGETINCS = -I../../../baseCom/ -I../../../netWork/ ../../../netWork/poller/
 #TARGETLIBS = ../../lib/lib/GameProvider.a ../../lib/lib/Epoll.a ../../lib/lib/Common.a ../../lib/lib/libaes.a ../../lib/lib/ODBCExt.a ../../lib/lib/libonsclient4cpp.a 
 
 CPP = g++
 DEBUG = -g -Wall -DDEBUG -D_REENTRANT -w -D_DEBUG_TEST -std=c++11
 RELEASE = -s -O2
 CPPFLAGS  = $(TARGETINCS)
-LINKFLAGS = $(TARGETLIBS) -lpthread 
+LINKFLAGS = $(TARGETLIBS) -lpthread -lrt
 #-lrt -lnsl -lz -lgcc_s -lodbc -ldl
-TARGETSRCS = ${wildcard *.c *.cpp ../../baseCom/*.cpp ../../netWork/*.cpp}
+TARGETSRCS = ${wildcard *.c *.cpp ../../../baseCom/*.cpp ../../../netWork/*.cpp ../../../netWork/poller/*.cpp}
 
 #TARGETSRCS = main.cpp
 #OBJS = $(addprefix $(OBJECTPATH)/, $(patsubst %.c,%.o,$(notdir $(TARGETSRCS:.cpp=.o))))
@@ -55,5 +55,5 @@ endif
 all debug release: $(TARGETNAME)
 
 clean:
-	rm -f $(OBJECTPATH)/*.o $(TARGETPATH)/$(TARGETNAME) $(TARGETPATH)/core* rm -f *.o  ../majiang/*.o ../wrbuyu/*.o ../ddz/*.o
+	rm -f $(OBJECTPATH)/*.o $(TARGETPATH)/$(TARGETNAME) $(TARGETPATH)/core*
 

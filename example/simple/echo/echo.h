@@ -1,6 +1,6 @@
-#include "../../../netWork/InetAddress.h"
-#include "../../../netWork/TcpServer.h"
-#include "../../../baseCom/Timestamp.h"
+#include "InetAddress.h"
+#include "TcpServer.h"
+#include "Timestamp.h"
 
 class EventLoop;
 class Buffer;

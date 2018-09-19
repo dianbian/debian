@@ -2,6 +2,7 @@
 #include "Condition.h"
 
 #include <errno.h>
+#include <time.h>
 
 bool Condition::waitForSeconds(double seconds)
 {
