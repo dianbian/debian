@@ -1,22 +1,24 @@
-TARGETNAME := echo
+TARGETNAME := echoServer
 TARGETPATH := ../bin
 OBJECTPATH := ../obj/$(TARGETNAME)
 # 0 -- Application; 1 -- Static library; 2 -- Dynamic library
 TARGETTYPE = 0
-TARGETINCS = -I../../../baseCom/ -I../../../netWork/ ../../../netWork/poller/
+TARGETINCS = -I../../factory/include
+TARGETLIBS = ../../factory/netfactory.a
 #TARGETLIBS = ../../lib/lib/GameProvider.a ../../lib/lib/Epoll.a ../../lib/lib/Common.a ../../lib/lib/libaes.a ../../lib/lib/ODBCExt.a ../../lib/lib/libonsclient4cpp.a 
 
 CPP = g++
-DEBUG = -g -Wall -DDEBUG -D_REENTRANT -w -D_DEBUG_TEST -std=c++11
+DEBUG = -g -Wall -D_REENTRANT -w -std=c++0x
 RELEASE = -s -O2
 CPPFLAGS  = $(TARGETINCS)
 LINKFLAGS = $(TARGETLIBS) -lpthread -lrt
 #-lrt -lnsl -lz -lgcc_s -lodbc -ldl
-TARGETSRCS = ${wildcard *.c *.cpp ../../../baseCom/*.cpp ../../../netWork/*.cpp ../../../netWork/poller/*.cpp}
+TARGETSRCS = ${wildcard *.c *.cpp}
+#../../../baseCom/*.cpp ../../../netWork/*.cpp ../../../netWork/poller/*.cpp}
 
 #TARGETSRCS = main.cpp
-#OBJS = $(addprefix $(OBJECTPATH)/, $(patsubst %.c,%.o,$(notdir $(TARGETSRCS:.cpp=.o))))
-OBJS = $(patsubst %.c,%.o,$(TARGETSRCS:.cpp=.o))
+OBJS = $(addprefix $(OBJECTPATH)/, $(patsubst %.c,%.o,$(notdir $(TARGETSRCS:.cpp=.o))))
+#OBJS = $(patsubst %.c,%.o,$(TARGETSRCS:.cpp=.o))
 
 ifeq ($(strip $(TARGETPATH)),)
     TARGETPATH := .

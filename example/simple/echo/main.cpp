@@ -1,7 +1,7 @@
 #include "echo.h"
 
-#include "baseCom/Logging.h"
-#include "netWork/EventLoop.h"
+#include "Logging.h"
+#include "EventLoop.h"
 
 #include <unistd.h>
 
