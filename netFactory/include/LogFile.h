@@ -7,10 +7,7 @@
 
 #include <memory>
 
-namespace FileUtil
-{
 class AppendFile;
-}
 
 class LogFile : public noncopyable
 {
@@ -38,7 +35,7 @@ class LogFile : public noncopyable
   time_t startOfPeriod_;
   time_t lastRoll_;
   time_t lastFlush_;
-  std::unique_ptr<FileUtil::AppendFile> file_;
+  std::unique_ptr<AppendFile> file_;
   
   const static int kRollPerSeconds_ = 60 * 60 * 24;
 };
