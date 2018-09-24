@@ -7,7 +7,7 @@ TARGETSRCS = $(wildcard *.c *.cpp)
 TARGETINCS = -I ../include/
 
 CPP = g++
-DEBUG = -g -D_REENTRANT -w -std=c++0x
+DEBUG = -g -Wall -D_REENTRANT -w -std=c++0x
 RELEASE = -s -O2
 CPPFLAGS  = $(TARGETINCS)
 LINKFLAGS = $(TARGETLIBS) -lpthread -lrt -lnsl -lgcc_s

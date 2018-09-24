@@ -69,7 +69,7 @@ void TcpServer::newConnection(int sockfd, const InetAddress& peerAddr)
   
   LOG_INFO << "TcpServer::newConnection [" << name_ << "] - new connection [" << connName
            << "] from " << peerAddr.toIpPort();
-  InetAddress localAddr(netsockets::getLocaladdr(sockfd));
+  InetAddress localAddr(netsockets::getLocalAddr(sockfd));
   //poll with zero timeout to double confirm the new connection
   //use make_shared if necessary
   TcpConnectionPtr conn(new TcpConnection(ioLoop, connName, sockfd, localAddr, peerAddr));

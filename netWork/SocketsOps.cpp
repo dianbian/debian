@@ -229,14 +229,14 @@ const struct sockaddr_in6* netsockets::sockaddr_in6_cast(const struct sockaddr* 
 	return static_cast<const struct sockaddr_in6*>(implicit_cast<const void*>(addr));
 }
 	
-struct sockaddr_in6 netsockets::getLocaladdr(int sockfd)
+struct sockaddr_in6 netsockets::getLocalAddr(int sockfd)
 {
 	struct sockaddr_in6 localaddr;
 	bzero(&localaddr, sizeof localaddr);
 	socklen_t addrlen = static_cast<socklen_t>(sizeof localaddr);
 	if (::getsockname(sockfd, sockaddr_cast(&localaddr), &addrlen) < 0)
 	{
-		LOG_SYSERR <<  "netsockets::getLocaladdr()";
+		LOG_SYSERR <<  "netsockets::getLocalAddr()";
 	}
 	return localaddr;
 }
@@ -258,7 +258,7 @@ struct sockaddr_in6 netsockets::getPeerAddr(int sockfd)
 #endif
 bool netsockets::isSelfConnect(int sockfd)
 {
-  struct sockaddr_in6 localaddr = getLocaladdr(sockfd);
+  struct sockaddr_in6 localaddr = getLocalAddr(sockfd);
   struct sockaddr_in6 peeraddr = getPeerAddr(sockfd);
   if (localaddr.sin6_family == AF_INET)
 	{

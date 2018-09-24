@@ -101,6 +101,7 @@ bool LogFile::rollFile()
     file_.reset(new AppendFile(filename));
     return true;
   }
+	return false;
 }
 
 string LogFile::getLogFileName(const string& basename, time_t* now)

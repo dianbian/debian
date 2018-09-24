@@ -95,7 +95,7 @@ void EventLoop::loop()
 	looping_ = true;
 	quit_ = false;    //FIXME: what if someone calls quit() before loop() ?
 	LOG_TRACE << "EventLoop " << this << " start looping";
-	printf("EventLoop::loop\n");
+	//printf("EventLoop::loop\n");
 	while(!quit_)
 	{
 		printf("loop\n");

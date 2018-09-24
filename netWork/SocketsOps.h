@@ -35,7 +35,7 @@ namespace netsockets
 	const struct sockaddr_in* sockaddr_in_cast(const struct sockaddr* addr);
 	const struct sockaddr_in6* sockaddr_in6_cast(const struct sockaddr* addr);
 	
-	struct sockaddr_in6 getLocaladdr(int sockfd);
+	struct sockaddr_in6 getLocalAddr(int sockfd);
 	struct sockaddr_in6 getPeerAddr(int sockfd);
 	bool isSelfConnect(int sockfd);
 	

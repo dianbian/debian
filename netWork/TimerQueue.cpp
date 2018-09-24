@@ -229,7 +229,12 @@ bool TimerQueue::insert(Timer* timer)
 		assert(result.second);
 		(void)result;
 	}
-
+	{
+		auto result = activeTimers_.insert(ActiveTimer(timer, timer->sequence()));                                                 
+	  assert(result.second);
+		(void)result;
+	}
+
 	assert(timers_.size() == activeTimers_.size());
 	return earliestChanged;
 }

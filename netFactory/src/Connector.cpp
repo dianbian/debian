@@ -20,6 +20,12 @@ Connector::Connector(EventLoop* loop, const InetAddress& serverAddr)
   LOG_DEBUG << "ctor[" << this << "]";
 }
 
+Connector::~Connector()
+{        
+  LOG_DEBUG << "dtor[" << this << "]";
+	assert(!channel_);
+}
+
 void Connector::start()
 {
   connect_ = true;
