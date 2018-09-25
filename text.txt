@@ -27,5 +27,5 @@ nc 0.0.0.0 2018
 
 
 -DDEBUG 编译选项可去除代码中的#DEBUG
-
-
+编译生成静态文件http://bbs.51testing.com/thread-1161627-1-1.htmlg++ -o gtest.o -I./include -I./  -c ./src/gtest-all.cc
+ar -rv libgtest.a gtest.o
