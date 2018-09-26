@@ -1,31 +1,31 @@
-this is my first time to use github, I am excited.
-
-this is my second time to upload github to my house computer.
-
-how to connect wifi ?   yum -y install NetworkManager-wifi (censtos 7);
-                        nmcli r wifi on
-												nmcli dev wifi
-												nmcli --ask dev wifi connect wifi-name;
-
-how to connect Enther   vi /etc/sysconfig/network-scripts
-                        vi /etc/resolv.conf;
-
-                        
-                        
-compiler
-g++ -g ../../../baseCom/*.cpp ../../../netWork/*.cpp echo.cpp main.cpp -std=c++11 -pthread -D__STDC_FORMAT_MACROS
-
-g++ ../../../baseCom/*.cpp ../../../netWork/*.cpp ../../../netWork/poller/*.cpp echo.cpp main.cpp -std=c++0x -pthread -g -Wall -o main
-
-ptr_vector
-https://blog.csdn.net/qq_17308321/article/details/81558253
-
-
-https://www.2cto.com/kf/201512/454263.html
-
-nc 0.0.0.0 2018
-
-
--DDEBUG 编译选项可去除代码中的#DEBUG
+this is my first time to use github, I am excited.
+
+this is my second time to upload github to my house computer.
+
+how to connect wifi ?   yum -y install NetworkManager-wifi (censtos 7);
+                        nmcli r wifi on
+												nmcli dev wifi
+												nmcli --ask dev wifi connect wifi-name;
+
+how to connect Enther   vi /etc/sysconfig/network-scripts
+                        vi /etc/resolv.conf;
+
+                        
+                        
+compiler
+g++ -g ../../../baseCom/*.cpp ../../../netWork/*.cpp echo.cpp main.cpp -std=c++11 -pthread -D__STDC_FORMAT_MACROS
+
+g++ ../../../baseCom/*.cpp ../../../netWork/*.cpp ../../../netWork/poller/*.cpp echo.cpp main.cpp -std=c++0x -pthread -g -Wall -o main
+
+ptr_vector
+https://blog.csdn.net/qq_17308321/article/details/81558253
+
+
+https://www.2cto.com/kf/201512/454263.html
+
+nc 0.0.0.0 2018
+
+
+-DDEBUG 编译选项可去除代码中的#DEBUG
 编译生成静态文件http://bbs.51testing.com/thread-1161627-1-1.htmlg++ -o gtest.o -I./include -I./  -c ./src/gtest-all.cc
-ar -rv libgtest.a gtest.o
+ar -rv libgtest.a gtest.o
