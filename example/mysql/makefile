@@ -11,7 +11,7 @@ CPP = g++
 DEBUG = -g -Wall -D_REENTRANT -w -std=c++0x
 RELEASE = -s -O2
 CPPFLAGS  = $(TARGETINCS)
-LINKFLAGS = $(TARGETLIBS) -lpthread -lrt
+LINKFLAGS = $(TARGETLIBS) -lpthread -lrt -lz
 #-lrt -lnsl -lz -lgcc_s -lodbc -ldl
 TARGETSRCS = ${wildcard *.c *.cpp}
 #../../../baseCom/*.cpp ../../../netWork/*.cpp ../../../netWork/poller/*.cpp}

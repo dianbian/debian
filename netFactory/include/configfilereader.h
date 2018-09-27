@@ -1,6 +1,5 @@
 /** 
  *  简单的配置文件读取类，ConfigFileReader.h
- *  zhangyl 2017.05.27
  */
 #ifndef __CONFIG_FILE_READER_H__
 #define __CONFIG_FILE_READER_H__
@@ -11,9 +10,11 @@
 class CConfigFileReader
 {
 public:
-	CConfigFileReader(const char* filename);
-	~CConfigFileReader();
+    //CConfigFileReader(const char* filename);
+    CConfigFileReader();
+    ~CConfigFileReader();
 
+    void InitFile(const char* filename);
     char* GetConfigName(const char* name);
     int SetConfigValue(const char* name, const char*  value);
 

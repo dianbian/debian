@@ -1,6 +1,5 @@
 /**
  *  服务器主服务类，IMServer.cpp
- *  zhangyl 2017.03.09
  **/
 #include "InetAddress.h"
 #include "Logging.h"
@@ -8,23 +7,90 @@
 #include "IMServer.h"
 #include "ClientSession.h"
 #include "UserManager.h"
+#include "configfilereader.h"
+#include "AsyncLogging.h"
 
-bool IMServer::Init(const char* ip, short port, EventLoop* loop)
+#include <iostream>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <dirent.h>
+#include <fcntl.h>
+
+CConfigFileReader config;
+
+AsyncLogging* g_asyncLog = NULL;
+
+void asyncOutput(const char* msg, int len)
+{
+    if (g_asyncLog != NULL)
+    {
+        g_asyncLog->append(msg, len);
+        std::cout << msg << std::endl;
+    }
+}
+
+bool IMServer::Init(const char* ip, short port, int threadNum, EventLoop* loop)
 {   
     InetAddress addr(ip, port);
-    m_server.reset(new TcpServer(loop, addr, "ZYL-MYIMSERVER", TcpServer::kReusePort));
+    m_server.reset(new TcpServer(loop, addr, "bianMan", TcpServer::kReusePort));
     m_server->setConnectionCallback(std::bind(&IMServer::OnConnection, this, std::placeholders::_1));
-    //启动侦听
+    m_server->setThreadNum(threadNum);
+    //start listen
     m_server->start();
 
     return true;
+}
+
+void IMServer::start(EventLoop *loop)
+{
+    Logger::setLogLevel(Logger::INFO);
+    config.InitFile("chatserver.conf");
+    const char* logfilepath = config.GetConfigName("logfiledir");
+    if (logfilepath == NULL)
+    {
+        LOG_SYSFATAL << "logdir is not set in config file";
+        exit(1);
+    }
+    //如果log目录不存在则创建之
+    DIR* dp = opendir(logfilepath);
+    if (dp == NULL)
+    {        
+        if (mkdir(logfilepath, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH) != 0)
+        {            
+            LOG_SYSFATAL << "create base dir error, " << logfilepath << ", errno: " << errno << ", " << strerror(errno);
+            exit(1);
+        }
+    }
+    closedir(dp);
+                                                     
+    const char* logfilename = config.GetConfigName("logfilename");
+    if (logfilename == NULL)
+    {
+       LOG_SYSFATAL << "logfilename is not set in config file";
+       exit(1);
+    }
+    std::string strLogFileFullPath(logfilepath);
+    strLogFileFullPath += logfilename;
+    Logger::setLogLevel(Logger::DEBUG);
+    int kRollSize = 500 * 1000 * 1000;
+    AsyncLogging log(strLogFileFullPath.c_str(), kRollSize);
+    log.start();
+    g_asyncLog = &log;
+    Logger::setOutput(asyncOutput);
+   
+    const char* listenip = config.GetConfigName("listenip");
+    short listenport = (short)atol(config.GetConfigName("listenport"));
+    int threadNum = (int)atol(config.GetConfigName("threadnum"));
+    Init(listenip, listenport, threadNum, loop);
 }
 
 void IMServer::OnConnection(std::shared_ptr<TcpConnection> conn)
 {
     if (conn->connected())
     {
-        //LOG_INFO << "client connected:" << conn->peerAddress().toIpPort();
+        LOG_INFO << "client connected:" << conn->peerAddress().toIpPort();
         ++ m_baseUserId;
         std::shared_ptr<ClientSession> spSession(new ClientSession(conn));
         conn->setMessageCallback(std::bind(&ClientSession::OnRead, spSession.get(), std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));       

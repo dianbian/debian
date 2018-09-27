@@ -4,14 +4,14 @@ OBJECTPATH := ../obj/$(TARGETNAME)
 # 0 -- Application; 1 -- Static library; 2 -- Dynamic library
 TARGETTYPE = 0
 TARGETINCS = -I../include -I../../factory/include -I../../lib/include
-TARGETLIBS = ../../factory/netfactory.a ../../lib/lib/libjson.a ../../lib/lib/mysqlLib.a
+TARGETLIBS = ../../factory/netfactory.a ../../lib/lib/libjson.a ../../lib/lib/mysqlLib.a ../../lib/lib/libmysqlclient.a 
 #TARGETLIBS = ../../lib/lib/GameProvider.a ../../lib/lib/Epoll.a ../../lib/lib/Common.a ../../lib/lib/libaes.a ../../lib/lib/ODBCExt.a ../../lib/lib/libonsclient4cpp.a 
 
 CPP = g++
 DEBUG = -g -Wall -D_REENTRANT -w -std=c++0x
 RELEASE = -s -O2
 CPPFLAGS  = $(TARGETINCS)
-LINKFLAGS = $(TARGETLIBS) -lpthread -lrt
+LINKFLAGS = $(TARGETLIBS) -lpthread -lrt -lz -ldl
 #-lrt -lnsl -lz -lgcc_s -lodbc -ldl
 TARGETSRCS = ${wildcard *.c *.cpp}
 #../../../baseCom/*.cpp ../../../netWork/*.cpp ../../../netWork/poller/*.cpp}

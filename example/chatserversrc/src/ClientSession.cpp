@@ -1,10 +1,10 @@
 /**
  * ClientSession.cpp
- * zhangyl, 2017.03.10
  **/
 #include <string.h>
 #include <sstream>
 #include <list>
+#include "EventLoop.h"
 #include "TcpConnection.h"
 #include "protocolstream.h"
 #include "Logging.h"

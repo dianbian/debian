@@ -6,15 +6,15 @@
 #include "EventLoopThread.h"
 
 #include <stdio.h>
-
+/*
 EventLoopThreadPool::EventLoopThreadPool()
   : baseLoop_(NULL),
     started_(false),
     numThreads_(0),
     next_(0)
 {
-}
-/*
+}*/
+
 EventLoopThreadPool::EventLoopThreadPool(EventLoop* baseLoop, const std::string& nameArg)
   : baseLoop_(baseLoop),
     name_(nameArg),
@@ -23,17 +23,11 @@ EventLoopThreadPool::EventLoopThreadPool(EventLoop* baseLoop, const std::string&
     next_(0)
 {
  
-}*/
+}
 
 EventLoopThreadPool::~EventLoopThreadPool()
 {
   //do not delete loop, it's stack varibale.
-}
-
-void EventLoopThreadPool::Init(EventLoop* baseLoop, int numThreads)
-{
-  numThreads_ = numThreads;
-  baseLoop_ = baseLoop;
 }
 
 void EventLoopThreadPool::start(const ThreadInitCallback& cb)

@@ -2,13 +2,18 @@
 #include <stdio.h>  //for snprintf
 #include <string.h>
 
-CConfigFileReader::CConfigFileReader(const char* filename)
+CConfigFileReader::CConfigFileReader()
 {
-	_LoadFile(filename);
+    //_LoadFile(filename);
 }
 
 CConfigFileReader::~CConfigFileReader()
 {
+}
+
+void CConfigFileReader::InitFile(const char* filename)
+{
+   _LoadFile(filename);
 }
 
 char* CConfigFileReader::GetConfigName(const char* name)

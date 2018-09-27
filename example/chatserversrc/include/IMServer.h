@@ -1,12 +1,12 @@
 /** 
  *  服务器主服务类，IMServer.h
- *  zhangyl 2017.03.09
  **/
 #pragma once
 #include <memory>
 #include <list>
 #include <map>
 #include <mutex>
+
 #include "TcpServer.h"
 #include "EventLoop.h"
 #include "ClientSession.h"
@@ -37,7 +37,9 @@ public:
     IMServer(const IMServer& rhs) = delete;
     IMServer& operator =(const IMServer& rhs) = delete;
 
-    bool Init(const char* ip, short port, EventLoop* loop);
+    bool Init(const char* ip, short port, int threadNum, EventLoop* loop);
+
+    void start(EventLoop* loop);
 
     void GetSessions(std::list<std::shared_ptr<ClientSession>>& sessions);
     //用户id和clienttype会唯一确定一个session
@@ -55,7 +57,6 @@ private:
     void OnConnection(std::shared_ptr<TcpConnection> conn);  
     //连接断开
     void OnClose(const std::shared_ptr<TcpConnection>& conn);
-   
 
 private:
     std::shared_ptr<TcpServer>                     m_server;
@@ -63,4 +64,5 @@ private:
     std::mutex                                     m_sessionMutex;      //多线程之间保护m_sessions
     int                                            m_baseUserId{};
     std::mutex                                     m_idMutex;           //多线程之间保护m_baseUserId
+
 };
