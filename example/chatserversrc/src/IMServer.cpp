@@ -8,7 +8,6 @@
 #include "ClientSession.h"
 #include "UserManager.h"
 #include "configfilereader.h"
-#include "AsyncLogging.h"
 
 #include <iostream>
 #include <stdlib.h>
@@ -20,15 +19,55 @@
 
 CConfigFileReader config;
 
-AsyncLogging* g_asyncLog = NULL;
-
+//AsyncLogging* g_asyncLog = NULL;
+/*
 void asyncOutput(const char* msg, int len)
 {
     if (g_asyncLog != NULL)
     {
         g_asyncLog->append(msg, len);
-        std::cout << msg << std::endl;
+        //std::cout << msg << std::endl;
     }
+}*/
+
+void InitializeLog()
+{
+    config.InitFile("chatserver.conf");
+    const char* logfilepath = config.GetConfigName("logfiledir");
+    if (logfilepath == NULL)
+    {
+        //LOG_SYSFATAL << "logdir is not set in config file";
+        exit(1);
+    }
+    DIR* dp = opendir(logfilepath);
+    if (dp == NULL)
+    {
+        if (mkdir(logfilepath, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH) != 0)
+        {
+            //LOG_SYSFATAL << "create base dir error, " << logfilepath << ", errno: " << errno << ", " << strerror(errno);
+            exit(1);
+        }
+    }
+    closedir(dp);
+
+    const char* logfilename = config.GetConfigName("logfilename");
+    if (logfilename == NULL)
+    {
+       //LOG_SYSFATAL << "logfilename is not set in config file";
+       exit(1);
+    }
+    std::string strLogFileFullPath(logfilepath);
+    strLogFileFullPath += logfilename;
+    int kRollSize = 500 * 1000 * 1000;
+    //printf("logname = %s\n", strLogFileFullPath.c_str());
+    
+ /*   AsyncLogging log(strLogFileFullPath.c_str(), kRollSize);
+    log.start();
+    g_asyncLog = &log;
+    Logger::setOutput(asyncOutput);
+    */
+    
+    //LOG_SYSFATAL << "logfilename is not set in config file"; 
 }
 
 bool IMServer::Init(const char* ip, short port, int threadNum, EventLoop* loop)
@@ -53,36 +92,11 @@ void IMServer::start(EventLoop *loop)
         LOG_SYSFATAL << "logdir is not set in config file";
         exit(1);
     }
-    //如果log目录不存在则创建之
-    DIR* dp = opendir(logfilepath);
-    if (dp == NULL)
-    {        
-        if (mkdir(logfilepath, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH) != 0)
-        {            
-            LOG_SYSFATAL << "create base dir error, " << logfilepath << ", errno: " << errno << ", " << strerror(errno);
-            exit(1);
-        }
-    }
-    closedir(dp);
-                                                     
-    const char* logfilename = config.GetConfigName("logfilename");
-    if (logfilename == NULL)
-    {
-       LOG_SYSFATAL << "logfilename is not set in config file";
-       exit(1);
-    }
-    std::string strLogFileFullPath(logfilepath);
-    strLogFileFullPath += logfilename;
-    Logger::setLogLevel(Logger::DEBUG);
-    int kRollSize = 500 * 1000 * 1000;
-    AsyncLogging log(strLogFileFullPath.c_str(), kRollSize);
-    log.start();
-    g_asyncLog = &log;
-    Logger::setOutput(asyncOutput);
    
     const char* listenip = config.GetConfigName("listenip");
     short listenport = (short)atol(config.GetConfigName("listenport"));
     int threadNum = (int)atol(config.GetConfigName("threadnum"));
+
     Init(listenip, listenport, threadNum, loop);
 }
 
@@ -95,8 +109,8 @@ void IMServer::OnConnection(std::shared_ptr<TcpConnection> conn)
         std::shared_ptr<ClientSession> spSession(new ClientSession(conn));
         conn->setMessageCallback(std::bind(&ClientSession::OnRead, spSession.get(), std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));       
 
-        std::lock_guard<std::mutex> guard(m_sessionMutex);
-        m_sessions.push_back(spSession);
+        //std::lock_guard<std::mutex> guard(m_sessionMutex);
+        // m_sessions.push_back(spSession);
     }
     else
     {
@@ -111,7 +125,7 @@ void IMServer::OnClose(const std::shared_ptr<TcpConnection>& conn)
     UserManager& userManager = Singleton<UserManager>::Instance();
 
     //TODO: 这样的代码逻辑太混乱，需要优化
-    std::lock_guard<std::mutex> guard(m_sessionMutex);
+    //std::lock_guard<std::mutex> guard(m_sessionMutex);
     for (auto iter = m_sessions.begin(); iter != m_sessions.end(); ++iter)
     {
         if ((*iter)->GetConnectionPtr() == NULL)
@@ -164,13 +178,13 @@ void IMServer::OnClose(const std::shared_ptr<TcpConnection>& conn)
 
 void IMServer::GetSessions(std::list<std::shared_ptr<ClientSession>>& sessions)
 {
-    std::lock_guard<std::mutex> guard(m_sessionMutex);
+    //std::lock_guard<std::mutex> guard(m_sessionMutex);
     sessions = m_sessions;
 }
 
 bool IMServer::GetSessionByUserIdAndClientType(std::shared_ptr<ClientSession>& session, int32_t userid, int32_t clientType)
 {
-    std::lock_guard<std::mutex> guard(m_sessionMutex);
+    //std::lock_guard<std::mutex> guard(m_sessionMutex);
     std::shared_ptr<ClientSession> tmpSession;
     for (const auto& iter : m_sessions)
     {
@@ -187,7 +201,7 @@ bool IMServer::GetSessionByUserIdAndClientType(std::shared_ptr<ClientSession>& s
 
 bool IMServer::GetSessionsByUserId(std::list<std::shared_ptr<ClientSession>>& sessions, int32_t userid)
 {
-    std::lock_guard<std::mutex> guard(m_sessionMutex);
+    //std::lock_guard<std::mutex> guard(m_sessionMutex);
     std::shared_ptr<ClientSession> tmpSession;
     for (const auto& iter : m_sessions)
     {
@@ -204,7 +218,7 @@ bool IMServer::GetSessionsByUserId(std::list<std::shared_ptr<ClientSession>>& se
 
 int32_t IMServer::GetUserStatusByUserId(int32_t userid)
 {
-    std::lock_guard<std::mutex> guard(m_sessionMutex);
+    //std::lock_guard<std::mutex> guard(m_sessionMutex);
     for (const auto& iter : m_sessions)
     {
         if (iter->GetUserId() == userid)
@@ -218,7 +232,7 @@ int32_t IMServer::GetUserStatusByUserId(int32_t userid)
 
 int32_t IMServer::GetUserClientTypeByUserId(int32_t userid)
 {
-    std::lock_guard<std::mutex> guard(m_sessionMutex);
+    //std::lock_guard<std::mutex> guard(m_sessionMutex);
     bool bMobileOnline = false;
     int clientType = CLIENT_TYPE_UNKOWN;
     for (const auto& iter : m_sessions)

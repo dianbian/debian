@@ -69,7 +69,8 @@ inline LogStream& operator<<(LogStream& s, const Logger::SourceFile& v)
 void defaultOutput(const char* msg, int len)
 {
   size_t n = fwrite(msg, 1, len, stdout);
-	(void)n;
+  printf("prefect\n");
+  (void)n;
 }
 
 void defaultFlush()

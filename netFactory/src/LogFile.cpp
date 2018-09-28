@@ -24,7 +24,8 @@ LogFile::LogFile(const string& basename,
     lastRoll_(0),
     lastFlush_(0)
 {
-  assert(basename.find('/') == string::npos);
+  //assert(basename.find('/') == string::npos);
+  //do not support recursive folder
   rollFile();
 }
 
@@ -109,17 +110,17 @@ string LogFile::getLogFileName(const string& basename, time_t* now)
   filename.reserve(basename.size() + 64);
   filename = basename;
  
-  char timebuf[32];
+  char timebuf[32];//  文件名太长了
   struct tm tm;
   *now = time(NULL);
-  gmtime_r(now, &tm);  //localtime_r
+  /*gmtime_r(now, &tm);  //localtime_r
   strftime(timebuf, sizeof timebuf, ".%Y%m%d-%H%M%S.", &tm);
   filename += timebuf;
   filename += ProcessInfo::hostname();
 
-  //char pidbuf[32];
-  //snprintf(pidbuf, sizeof pidbuf, ".%d", ProcessInfo::pid());
-  filename += ProcessInfo::pidString();
+  char pidbuf[32];
+  snprintf(pidbuf, sizeof pidbuf, ".%d", ProcessInfo::pid());
+  filename += ProcessInfo::pidString();*/
   
   filename += ".log";
 

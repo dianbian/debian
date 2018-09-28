@@ -7,9 +7,11 @@
 #include <map>
 #include <mutex>
 
+#include "Mutex.h"
 #include "TcpServer.h"
 #include "EventLoop.h"
 #include "ClientSession.h"
+#include "AsyncLogging.h"
 
 enum CLIENT_TYPE
 {
@@ -61,8 +63,12 @@ private:
 private:
     std::shared_ptr<TcpServer>                     m_server;
     std::list<std::shared_ptr<ClientSession>>      m_sessions;
-    std::mutex                                     m_sessionMutex;      //多线程之间保护m_sessions
+    //std::mutex                                   m_sessionMutex;      //多线程之间保护m_sessions
+    MutexLock                                      m_sessionMutex;      //多线程之间保护m_sessions
     int                                            m_baseUserId{};
-    std::mutex                                     m_idMutex;           //多线程之间保护m_baseUserId
+    //std::mutex                                   m_idMutex;           //多线程之间保护m_baseUserId
+    MutexLock                                      m_idMutex;           //多线程之间保护m_baseUserId
 
 };
+
+void InitializeLog();

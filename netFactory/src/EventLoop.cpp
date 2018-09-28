@@ -36,7 +36,7 @@ class IgnoreSigPipe
   IgnoreSigPipe()
   { 
     ::signal(SIGPIPE, SIG_IGN);
-    LOG_TRACE << "Ignore SIGPIPE";
+    //LOG_TRACE << "Ignore SIGPIPE";
   }
 };
 #pragma GCC diagnostic error "-Wold-style-cast"
@@ -57,16 +57,16 @@ EventLoop::EventLoop()
 	iteration_(0),
 	threadId_(CurrentThread::tid()),
   //threadId_(new EPollPoller(this)),
-  poller_(new EPollPoller(this)),
-  timerQueue_(new TimerQueue(this)),
+        poller_(new EPollPoller(this)),
+        timerQueue_(new TimerQueue(this)),
 	wakeupFd_(createEventfd()),
 	wakeupChannel_(new Channel(this, wakeupFd_)),
 	currentActiveChannel_(NULL)
 {
-	LOG_DEBUG << "EventLoop created " << this << 	" in thread " << threadId_;
+	//LOG_DEBUG << "EventLoop created " << this << 	" in thread " << threadId_;
 	if (t_loopInThisThread)
 	{
-		LOG_FATAL << "Another EventLoop " << t_loopInThisThread << " exists int this thread " << threadId_;
+		//LOG_FATAL << "Another EventLoop " << t_loopInThisThread << " exists int this thread " << threadId_;
 	}
 	else 
 	{
@@ -75,7 +75,7 @@ EventLoop::EventLoop()
 	wakeupChannel_->setReadCallback(std::bind(&EventLoop::handleRead, this));
 	//we are always reading the wakeupfd
 	wakeupChannel_->enableReading();
-	printf("EventLoop::EventLoop\n");
+	printf("EventLoop::EventLoop concrete\n");
 }
 
 EventLoop::~EventLoop()
